@@ -1,0 +1,234 @@
+:root {
+    --color-main-background: #F5F0E6;
+    --color-secondary-background: #D9D2C5;
+    --color-third-background: #E6DAC8;
+    --color-btn: #8C6E5F;
+    --color-btn-hover: #6F5448;
+    --color-title: #4F463B;
+    --color-text: #706558;
+    --color-separator: #4F463B;
+}
+
+.service-page-container {
+    background-color: var(--color-main-background);
+    padding-top: 80px;
+}
+
+.service-page-container .section-title {
+    position: relative;
+    margin-bottom: 3rem;
+    color: var(--color-title);
+}
+
+.service-page-container .section-title:after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--color-btn);
+}
+
+.service-page-container .filter-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los botones se ajusten en varias filas si es necesario */
+    justify-content: center; /* Centra los botones horizontalmente */
+    gap: 10px; /* Espacio entre los botones */
+    margin-bottom: 30px;
+}
+
+.service-page-container .filter-btn {
+    background-color: var(--color-main-background);
+    color: var(--color-btn);
+    border: 2px solid var(--color-btn);
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.service-page-container .filter-btn:hover,
+.service-page-container .filter-btn.active {
+    background-color: var(--color-btn);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mejora visual para las tarjetas de servicio */
+.service-page-container .service-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-secondary-background);
+}
+
+.service-page-container .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.service-page-container .service-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.service-page-container .service-card .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.service-page-container .service-card .card-title {
+    color: var(--color-title);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.service-page-container .service-card .card-text {
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.service-page-container .service-card hr {
+    border-top: 2px solid var(--color-separator);
+    margin: 1.5rem 0;
+}
+
+.service-page-container .service-card .service-price {
+    color: var(--color-btn);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.service-page-container .btn-reservar {
+    background-color: var(--color-btn);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: 100%;
+    max-width: none;
+    margin-top: auto;
+}
+
+.service-page-container .btn-reservar:hover {
+    background-color: var(--color-btn-hover);
+    transform: scale(1.05);
+}
+
+/* Nuevo loader personalizado */
+.service-page-container .custom-loader {
+    width: 80px;
+    height: 80px;
+    margin: 2rem auto;
+    position: relative;
+}
+
+.service-page-container.custom-loader:before,
+.service-page-container .custom-loader:after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: var(--color-btn);
+    animation: spin 1.5s linear infinite;
+}
+
+.service-page-container .custom-loader:after {
+    border-top-color: var(--color-btn-hover);
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animación de escalado para el loader */
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+.service-page-container .loader-text {
+    color: var(--color-btn);
+    font-weight: 600;
+    margin-top: 1rem;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Animación para las cards */
+.service-page-container .service-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardAppear 0.6s ease forwards;
+}
+
+@keyframes cardAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- -- Cards Yoga e Hidromasaje -- -----*/
+.service-page-container .yoga-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.service-page-container .yoga-features i {
+    color: var(--color-btn);
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* ---- -- Carrusel Yoga e Hidromasaje -- ---- */
+.service-page-container .wellness-slide {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.service-page-container .carousel-indicators button {
+    background-color: white;
+}
+
+.service-page-container .carousel-control-prev-icon,
+.service-page-container .carousel-control-next-icon {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    padding: 20px;
+}
