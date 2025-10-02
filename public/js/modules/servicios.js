@@ -98,13 +98,13 @@ export class ServiciosManager {
   // Formatear duración para mostrar
   formatDuration(minutes) {
     if (minutes < 60) {
-      return `${minutes} min`;
+      return ` ${minutes} min`;
     } else {
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
       return remainingMinutes > 0
-        ? `${hours}h ${remainingMinutes}min`
-        : `${hours}h`;
+        ? ` ${hours}h ${remainingMinutes}min`
+        : ` ${hours}h`;
     }
   }
 
