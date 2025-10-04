@@ -121,3 +121,32 @@
 .auth-user {
     transition: opacity 0.3s ease;
 }
+
+/* Agrega al final de nav.css */
+
+/* Botones circulares de auth */
+.auth-buttons .btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 2px solid #fff;
+}
+
+.auth-buttons .btn:hover {
+    background-color: #fff;
+    color: #000 !important;
+    transform: scale(1.1);
+}
+
+/* Asegurar que los estados ocultos funcionen correctamente */
+.auth-buttons[style*="display: none"] {
+    display: none !important;
+}
+
+.auth-user[style*="display: none"] {
+    display: none !important;
+}

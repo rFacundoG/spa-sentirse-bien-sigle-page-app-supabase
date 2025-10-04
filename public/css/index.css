@@ -3,6 +3,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: var(--color-main-background);
 }
 
 #main-content {
@@ -13,4 +14,47 @@ body {
     max-height: 590px; /* o la altura que prefieras */
     object-fit: cover; /* recorta imagen para que encaje */
     width: 100%;
+}
+
+.btn-success {
+    background-color: var(--color-btn);
+    border-color: var(--color-btn);
+}
+
+.btn-success:hover {
+    background-color: var(--color-btn-hover);
+    border-color: var(--color-btn-hover);
+}
+
+.btn-success:active,
+.btn-success.active,
+.show>.btn-success.dropdown-toggle {
+    background-color: #6F5448 !important;
+    border-color: #6F5448 !important;
+}
+
+/* ---- --- Estilos de Servicios Populares -- ---- */
+.servicio-titulo {
+    color: var(--color-title);
+}
+
+.servicio-descripcion {
+    color: var(--color-text);
+}
+
+.servicio-fondo {
+    background-color: var(--color-secondary-background);
+}
+
+.servicio-texto {
+    color: var(--color-text);
+}
+
+/* ---- --- Estilos de Iconos del Footer -- ---- */
+.hover-scale {
+    transition: color 0.4s ease;
+}
+
+.hover-scale:hover {
+    color: var(--color-btn) !important;
 }

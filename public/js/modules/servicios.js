@@ -122,9 +122,8 @@ export class ServiciosManager {
     // Mostrar spinner mientras carga
     container.innerHTML = `
       <div class="col-12 text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando servicios...</span>
-        </div>
+          <div class="custom-loader"></div>
+          <p class="loader-text">Cargando servicios...</p>
       </div>
     `;
 

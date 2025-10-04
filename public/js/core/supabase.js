@@ -19,13 +19,13 @@ export const checkAuth = async () => {
     return { session, error }
 }
 
-// Función para obtener el perfil del usuario
+// Función para obtener los datos del usuario
 export const getUserProfile = async (userId) => {
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-    
-    return { data, error }
-}
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  return { data, error };
+};

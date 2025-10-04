@@ -1,5 +1,6 @@
+// app.js
 import { supabase, checkAuth } from "./core/supabase.js";
-import { AuthManager } from "./modules/auth.js";
+import { AuthManager, initAuthForms } from "./modules/auth.js"; // Importar initAuthForms
 import { Router } from "./core/router.js";
 
 // Inicializar la aplicación
@@ -16,6 +17,9 @@ class App {
 
     // Inicializar router
     this.router.init();
+
+    // Inicializar formularios de autenticación DESPUÉS de cargar los componentes
+    initAuthForms(this.authManager);
 
     // Verificar autenticación al cargar
     await this.authManager.checkAuthState();
