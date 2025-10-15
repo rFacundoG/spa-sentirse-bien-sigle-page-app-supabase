@@ -1,6 +1,6 @@
 // app.js
 import { supabase, checkAuth } from "./core/supabase.js";
-import { AuthManager, initAuthForms } from "./modules/auth.js"; // Importar initAuthForms
+import { AuthManager, initAuthForms } from "./auth/auth-export.js";
 import { Router } from "./core/router.js";
 
 // Inicializar la aplicación

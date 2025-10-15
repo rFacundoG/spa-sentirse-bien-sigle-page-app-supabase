@@ -39,15 +39,20 @@
     left: 50%;
 }
 
-/* Animación para los botones iniciar/crear cuenta */
+/* Animación para los botones iniciar/crear cuenta */ 
 .auth-buttons .nav-link {
     color: #fff !important;
-    transition: color 0.5s ease;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 /* Al hacer hover */
 .auth-buttons .nav-link:hover {
-    color: #000000 !important; /* Buscar otro color o cambiar la animacion */
+    background-color: #ffffff;
+    color: #000 !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Contenedor principal de auth */
