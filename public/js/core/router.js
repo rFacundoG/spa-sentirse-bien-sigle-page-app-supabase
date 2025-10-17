@@ -7,6 +7,8 @@ export class Router {
       servicios: "./pages/servicios.html",
       contacto: "./pages/contacto.html",
       productos: "./pages/productos.html",
+      perfil: "./pages/perfil.html",
+      reservas: "./pages/reservas.html",
     };
     this.currentPage = "home";
   }
@@ -20,6 +22,13 @@ export class Router {
   async navigateTo(page, pushState = true) {
     if (!this.routes[page]) {
       console.error("Página no encontrada:", page);
+      return;
+    }
+
+    // Verificar si la página requiere autenticación
+    if (this.requiresAuth(page) && !window.currentUser) {
+      console.log("Acceso no autorizado a", page, "- redirigiendo al home");
+      this.redirectToHome();
       return;
     }
 
@@ -63,20 +72,44 @@ export class Router {
     }
   }
 
+  requiresAuth(page) {
+    const protectedPages = ["perfil", "reservas"];
+    return protectedPages.includes(page);
+  }
+
+  redirectToHome() {
+    // Mostrar toast
+    if (typeof showToast === "function") {
+      showToast("Debes iniciar sesión para acceder a esta página", "warning");
+    }
+
+    // Redirigir inmediatamente al home
+    setTimeout(() => {
+      window.history.replaceState({ page: "home" }, "", "#home");
+      this.navigateTo("home", false);
+    }, 100);
+  }
+
   handlePopState(event) {
     const page = window.location.hash.replace("#", "") || "home";
     this.navigateTo(page, false);
   }
 
   updateActiveNavLink(page) {
-    // Remover active de todos los links
-    document.querySelectorAll(".nav-link").forEach((link) => {
-      link.classList.remove("active");
+    // Remover active de todos los links que no estén en dropdown
+    document.querySelectorAll("[data-spa-link]").forEach((link) => {
+      // Solo remover active de links que no estén dentro de un dropdown-menu
+      if (!link.closest(".dropdown-menu")) {
+        link.classList.remove("active");
+      }
     });
 
-    // Agregar active al link actual
-    const currentLink = document.querySelector(`[data-spa-link="${page}"]`);
+    // Agregar active solo a links que no estén en dropdown
+    const currentLink = document.querySelector(
+      `[data-spa-link="${page}"]:not(.dropdown-menu [data-spa-link])`
+    );
     if (currentLink) {
+      currentLink.classList.remove("active");
       currentLink.classList.add("active");
     }
   }
@@ -106,8 +139,22 @@ export class Router {
       case "home":
         this.initHomePage();
         break;
+      case "perfil":
+        this.initProfilePage();
+        break;
       // Agregar más casos según sea necesario
     }
+  }
+
+  initProfilePage() {
+    // Importar e inicializar el manager del perfil
+    import("../modules/perfil.js")
+      .then((module) => {
+        module.initProfilePage();
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de perfil:", error);
+      });
   }
 
   initServiciosPage() {

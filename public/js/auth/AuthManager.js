@@ -7,7 +7,17 @@ import { getErrorMessage, showToast } from "./auth-utils.js";
 export class AuthManager {
   constructor() {
     this.currentUser = null;
+    this.isInitialized = false;
+    this.authListeners = [];
     this.initAuthListeners();
+  }
+
+  onAuthInitialized(callback) {
+    if (this.isInitialized) {
+      callback(this.currentUser);
+    } else {
+      this.authListeners.push(callback);
+    }
   }
 
   initAuthListeners() {
@@ -34,10 +44,10 @@ export class AuthManager {
     if (session?.user) {
       try {
         await loadUserProfile(this, session.user.id);
+        this.notifyInitialized();
         updateAuthUI(this);
       } catch (error) {
         console.error("Error in handleSignedIn:", error);
-        // Continuar incluso si hay error en el perfil
         this.currentUser = {
           id: session.user.id,
           email: session.user.email,
@@ -45,6 +55,7 @@ export class AuthManager {
           rol: "user",
         };
         window.currentUser = this.currentUser;
+        this.notifyInitialized();
         updateAuthUI(this);
       }
     }
@@ -53,7 +64,23 @@ export class AuthManager {
   handleSignedOut() {
     this.currentUser = null;
     window.currentUser = null;
+    this.notifyInitialized();
     updateAuthUI(this);
+
+    // Si estamos en una página protegida, redirigir
+    const currentPage = window.location.hash.replace("#", "") || "home";
+    if (this.isProtectedPage(currentPage)) {
+      setTimeout(() => {
+        window.history.replaceState(null, "", "#home");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      }, 100);
+    }
+  }
+
+  notifyInitialized() {
+    this.isInitialized = true;
+    this.authListeners.forEach((callback) => callback(this.currentUser));
+    this.authListeners = [];
   }
 
   async handleTokenRefreshed(session) {
@@ -82,10 +109,21 @@ export class AuthManager {
         await this.handleSignedIn(session);
       } else {
         this.handleSignedOut();
+
+        // Si estamos en una página protegida, redirigir
+        const currentPage = window.location.hash.replace("#", "") || "home";
+        if (this.isProtectedPage(currentPage)) {
+          window.history.replaceState(null, "", "#home");
+        }
       }
     } catch (error) {
       console.error("Error in checkAuthState:", error);
     }
+  }
+
+  isProtectedPage(page) {
+    const protectedPages = ["perfil", "reservas"];
+    return protectedPages.includes(page);
   }
 
   async login(email, password) {

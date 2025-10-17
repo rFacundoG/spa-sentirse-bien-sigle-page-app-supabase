@@ -101,7 +101,7 @@
 }
 
 .user-avatar:hover {
-    border-color: #20c997;
+    border-color: var(--color-btn);
     transform: scale(1.05);
 }
 
@@ -126,8 +126,6 @@
 .auth-user {
     transition: opacity 0.3s ease;
 }
-
-/* Agrega al final de nav.css */
 
 /* Botones circulares de auth */
 .auth-buttons .btn {
