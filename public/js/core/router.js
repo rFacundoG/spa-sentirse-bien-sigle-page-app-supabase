@@ -9,6 +9,7 @@ export class Router {
       productos: "./pages/productos.html",
       perfil: "./pages/perfil.html",
       reservas: "./pages/reservas.html",
+      admin: "./pages/admin.html",
     };
     this.currentPage = "home";
   }
@@ -19,17 +20,62 @@ export class Router {
     this.navigateTo(path, false);
   }
 
+  async waitForAuth() {
+    // Si ya hay usuario, continuar
+    if (window.currentUser) return true;
+
+    // Si authManager existe, esperar a que se inicialice
+    if (window.App?.authManager) {
+      return new Promise((resolve) => {
+        // Timeout de seguridad (5 segundos máximo)
+        const timeout = setTimeout(() => {
+          console.warn("Timeout esperando por autenticación");
+          resolve(false);
+        }, 5000);
+
+        window.App.authManager.onAuthInitialized((user) => {
+          clearTimeout(timeout);
+          resolve(!!user);
+        });
+      });
+    }
+
+    return false;
+  }
+
   async navigateTo(page, pushState = true) {
     if (!this.routes[page]) {
       console.error("Página no encontrada:", page);
       return;
     }
 
-    // Verificar si la página requiere autenticación
-    if (this.requiresAuth(page) && !window.currentUser) {
-      console.log("Acceso no autorizado a", page, "- redirigiendo al home");
-      this.redirectToHome();
-      return;
+    // VERIFICACIÓN MEJORADA - Esperar explícitamente por auth
+    if (this.requiresAuth(page)) {
+      console.log("Página protegida detectada:", page);
+
+      // Esperar a que AuthManager esté inicializado
+      if (window.App?.authManager && !window.App.authManager.isInitialized) {
+        console.log("Esperando inicialización de AuthManager...");
+        await new Promise((resolve) => {
+          window.App.authManager.onAuthInitialized(resolve);
+        });
+      }
+
+      // Verificar si hay usuario
+      if (!window.currentUser) {
+        console.log("❌ Usuario no autenticado - Redirigiendo al home");
+        this.redirectToHome();
+        return;
+      }
+
+      // Verificación adicional para admin
+      if (page === "admin" && window.currentUser.rol !== "admin") {
+        console.log("❌ Sin permisos de admin - Redirigiendo al home");
+        this.redirectToHome();
+        return;
+      }
+
+      console.log("✅ Usuario autenticado, permitiendo acceso a:", page);
     }
 
     try {
@@ -73,7 +119,7 @@ export class Router {
   }
 
   requiresAuth(page) {
-    const protectedPages = ["perfil", "reservas"];
+    const protectedPages = ["perfil", "reservas", "admin"];
     return protectedPages.includes(page);
   }
 
@@ -142,8 +188,22 @@ export class Router {
       case "perfil":
         this.initProfilePage();
         break;
+      case "admin":
+        this.initAdminPage();
+        break;
       // Agregar más casos según sea necesario
     }
+  }
+
+  initAdminPage() {
+    import("../modules/admin.js")
+      .then((module) => {
+        const adminManager = module.initAdmin();
+        adminManager.loadAdminData();
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de admin:", error);
+      });
   }
 
   initProfilePage() {

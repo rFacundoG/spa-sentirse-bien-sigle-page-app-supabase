@@ -36,6 +36,13 @@ function updateUserDropdownInfo(authManager) {
   if (userEmail) {
     userEmail.textContent = authManager.currentUser.email;
   }
+
+  // Mostrar/ocultar enlace de admin
+  const adminLinkItem = document.getElementById("admin-link-item");
+  if (adminLinkItem) {
+    const isAdmin = authManager.currentUser.rol === "admin";
+    adminLinkItem.style.display = isAdmin ? "block" : "none";
+  }
 }
 
 function setupLogoutListener(authManager) {
