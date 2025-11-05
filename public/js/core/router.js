@@ -1,4 +1,4 @@
-import { serviciosManager } from "../modules/servicios.js";
+import { serviciosManager } from "../modules/services/index.js";
 
 export class Router {
   constructor() {
@@ -190,7 +190,10 @@ export class Router {
         break;
       case "admin":
         this.initAdminPage();
+      case "reservas":
+        this.initReservasPage();
         break;
+
       // Agregar más casos según sea necesario
     }
   }
@@ -263,6 +266,16 @@ export class Router {
     });
   }
 
+  initReservasPage() {
+    import("../modules/reservas.js")
+      .then((module) => {
+        module.initReservasPage(); // Llama a la función exportada
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de reservas:", error);
+      });
+  }
+
   initReservaButtons() {
     // Aquí puedes agregar la lógica para los botones de reserva
     document.addEventListener("click", (e) => {
@@ -275,25 +288,80 @@ export class Router {
     });
   }
 
-  handleReservaClick(event) {
-    // Verificar si el usuario está autenticado
-    if (!window.currentUser) {
-      // Mostrar modal de login si no está autenticado
-      const loginModal = new bootstrap.Modal(
-        document.getElementById("loginModal")
-      );
-      loginModal.show();
-      return;
-    }
-
-    // Lógica para reservas
+  async handleReservaClick(event) {
     const button = event.target.closest("button");
-    const servicioData = button.getAttribute("data-servicio");
+    if (!button) return;
 
-    if (servicioData) {
-      const servicio = JSON.parse(servicioData);
-      console.log("Reservando:", servicio);
-      // Aquí puedes redirigir a una página de reserva o mostrar un modal
+    // --- 1. Verificar autenticación (Tu lógica actual) ---
+    if (!window.currentUser) {
+        // Mostrar modal de login si no está autenticado
+        try {
+            const loginModal = new bootstrap.Modal(
+                document.getElementById("loginModal")
+            );
+            loginModal.show();
+        } catch (error) {
+            console.error("Error al mostrar el modal de login:", error);
+        }
+        return;
     }
-  }
+
+    // --- 2. Obtener datos del servicio (Lógica unificada) ---
+    const servicioDataJSON = button.getAttribute("data-servicio");
+    const servicioId = button.getAttribute("data-servicio-id");
+
+    let servicioInfo;
+
+    try {
+        if (servicioDataJSON) {
+            // Caso 1: Botón ESTÁTICO (Yoga, Hidromasaje)
+            const data = JSON.parse(servicioDataJSON);
+            servicioInfo = {
+                id: data.id || `static-${data.title.toLowerCase().replace(" ", "-")}`,
+                title: data.title,
+                price: parseFloat(data.price),
+                duration: data.duration || null,
+                isGrupal: true
+            };
+
+        } else if (servicioId) {
+            // Caso 2: Botón DINÁMICO (desde Supabase)
+            // Usamos el manager para obtener los datos (convirtiendo a NÚMERO)
+            const servicioCompleto = serviciosManager.getServicioById(Number(servicioId));
+
+            if (!servicioCompleto) {
+                console.error("No se encontró el servicio con ID:", servicioId);
+                if (typeof showToast === "function") {
+                    showToast("Error al seleccionar el servicio.", "danger");
+                }
+                return;
+            }
+            
+            servicioInfo = {
+                id: servicioCompleto.id,
+                title: servicioCompleto.title,
+                price: parseFloat(servicioCompleto.price),
+                duration: servicioCompleto.duration,
+                isGrupal: false
+            };
+        } else {
+            console.error("El botón de reserva no tiene datos (data-servicio o data-servicio-id).", button);
+            return;
+        }
+
+        // --- 3. Guardar en localStorage para la página de reserva ---
+        localStorage.setItem("servicioParaReservar", JSON.stringify(servicioInfo));
+        
+        console.log("Servicio guardado para reservar:", servicioInfo);
+
+        // --- 4. Redirigir a la página de reservas ---
+        this.navigateTo("reservas");
+
+    } catch (error) {
+        console.error("Error en handleReservaClick:", error);
+        if (typeof showToast === "function") {
+            showToast("Hubo un problema al procesar la reserva.", "danger");
+        }
+    }
+}
 }
