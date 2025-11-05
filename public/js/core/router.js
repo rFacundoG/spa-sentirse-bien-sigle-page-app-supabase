@@ -11,6 +11,8 @@ export class Router {
       reservas: "./pages/reservas.html",
       admin: "./pages/admin.html",
       "producto-detalle": "./pages/producto-detalle.html",
+      privacidad: "./pages/privacidad.html",
+      terminos: "./pages/terminos.html",
     };
     this.currentPage = "home";
     this.isNavigating = false;
