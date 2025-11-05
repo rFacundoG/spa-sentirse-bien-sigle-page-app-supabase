@@ -12,6 +12,7 @@ export class Router {
       admin: "./pages/admin.html",
     };
     this.currentPage = "home";
+    this.isNavigating = false;
   }
 
   init() {
@@ -49,44 +50,63 @@ export class Router {
       return;
     }
 
-    // VERIFICACIÓN MEJORADA - Esperar explícitamente por auth
-    if (this.requiresAuth(page)) {
-      console.log("Página protegida detectada:", page);
-
-      // Esperar a que AuthManager esté inicializado
-      if (window.App?.authManager && !window.App.authManager.isInitialized) {
-        console.log("Esperando inicialización de AuthManager...");
-        await new Promise((resolve) => {
-          window.App.authManager.onAuthInitialized(resolve);
-        });
-      }
-
-      // Verificar si hay usuario
-      if (!window.currentUser) {
-        console.log("❌ Usuario no autenticado - Redirigiendo al home");
-        this.redirectToHome();
-        return;
-      }
-
-      // Verificación adicional para admin
-      if (page === "admin" && window.currentUser.rol !== "admin") {
-        console.log("❌ Sin permisos de admin - Redirigiendo al home");
-        this.redirectToHome();
-        return;
-      }
-
-      console.log("✅ Usuario autenticado, permitiendo acceso a:", page);
+    if (this.isNavigating) {
+      console.log("Navegación en progreso, esperando...");
+      return;
     }
 
-    try {
-      // Mostrar loader
-      this.showLoader();
+    this.isNavigating = true;
 
-      // Cargar contenido de la página
+    try {
+      // Verfificacion para páginas protegidas
+      if (this.requiresAuth(page)) {
+        console.log("Página protegida detectada:", page);
+
+        // Mostrar Skeleton
+        this.showSkeletonLoader(page);
+
+        // Esperar a que AuthManager este inicializado
+        if (window.App?.authManager && !window.App.authManager.isInitialized) {
+          console.log("⏳ Esperando inicialización de AuthManager...");
+          await new Promise((resolve) => {
+            const timeout = setTimeout(() => {
+              console.warn("Timeout esperando AuthManager");
+              resolve();
+            }, 5000);
+
+            window.App.authManager.onAuthInitialized((user) => {
+              clearTimeout(timeout);
+              resolve();
+            });
+          });
+        }
+
+        // Verificar si hay usuario DESPUÉS de la inicialización
+        if (!window.currentUser) {
+          console.log("Usuario no autenticado");
+          this.redirectToHome();
+          return;
+        }
+
+        // Verificación adicional para admin
+        if (page === "admin" && window.currentUser.rol !== "admin") {
+          console.log("Sin permisos de admin");
+          this.redirectToHome();
+          return;
+        }
+
+        console.log("Usuario autenticado, cargando contenido real...");
+        // Continuar con la carga del contenido real
+      } else {
+        // Para páginas públicas, mostrar loader normal
+        this.showLoader();
+      }
+
+      // Cargar contenido real que reemplazara al Skeleton
       const response = await fetch(this.routes[page]);
       const html = await response.text();
 
-      // Actualizar el contenido principal
+      // Actualizar el contenido Principal (Reemplaza el Skeleton)
       document.getElementById("main-content").innerHTML = html;
 
       // Actualizar estado actual
@@ -107,14 +127,14 @@ export class Router {
     } catch (error) {
       console.error("Error navegando:", error);
       document.getElementById("main-content").innerHTML = `
-                <div class="container py-5">
-                    <div class="alert alert-danger">
-                        Error cargando la página. Por favor, intenta nuevamente.
-                    </div>
-                </div>
-            `;
+        <div class="container py-5">
+          <div class="alert alert-danger">
+            Error cargando la página. Por favor, intenta nuevamente.
+          </div>
+        </div>
+      `;
     } finally {
-      this.hideLoader();
+      this.isNavigating = false;
     }
   }
 
@@ -157,6 +177,20 @@ export class Router {
     if (currentLink) {
       currentLink.classList.remove("active");
       currentLink.classList.add("active");
+    }
+  }
+
+  showSkeletonLoader(page) {
+    // Usar el skeleton manager global
+    if (
+      window.skeletonManager &&
+      typeof window.skeletonManager.showSkeleton === "function"
+    ) {
+      window.skeletonManager.showSkeleton(page);
+    } else {
+      // Fallback si el skeleton manager no está disponible
+      console.warn("SkeletonManager no disponible, usando loader por defecto");
+      this.showLoader();
     }
   }
 
@@ -294,16 +328,16 @@ export class Router {
 
     // --- 1. Verificar autenticación (Tu lógica actual) ---
     if (!window.currentUser) {
-        // Mostrar modal de login si no está autenticado
-        try {
-            const loginModal = new bootstrap.Modal(
-                document.getElementById("loginModal")
-            );
-            loginModal.show();
-        } catch (error) {
-            console.error("Error al mostrar el modal de login:", error);
-        }
-        return;
+      // Mostrar modal de login si no está autenticado
+      try {
+        const loginModal = new bootstrap.Modal(
+          document.getElementById("loginModal")
+        );
+        loginModal.show();
+      } catch (error) {
+        console.error("Error al mostrar el modal de login:", error);
+      }
+      return;
     }
 
     // --- 2. Obtener datos del servicio (Lógica unificada) ---
@@ -313,55 +347,61 @@ export class Router {
     let servicioInfo;
 
     try {
-        if (servicioDataJSON) {
-            // Caso 1: Botón ESTÁTICO (Yoga, Hidromasaje)
-            const data = JSON.parse(servicioDataJSON);
-            servicioInfo = {
-                id: data.id || `static-${data.title.toLowerCase().replace(" ", "-")}`,
-                title: data.title,
-                price: parseFloat(data.price),
-                duration: data.duration || null,
-                isGrupal: true
-            };
+      if (servicioDataJSON) {
+        // Caso 1: Botón ESTÁTICO (Yoga, Hidromasaje)
+        const data = JSON.parse(servicioDataJSON);
+        servicioInfo = {
+          id: data.id || `static-${data.title.toLowerCase().replace(" ", "-")}`,
+          title: data.title,
+          price: parseFloat(data.price),
+          duration: data.duration || null,
+          isGrupal: true,
+        };
+      } else if (servicioId) {
+        // Caso 2: Botón DINÁMICO (desde Supabase)
+        // Usamos el manager para obtener los datos (convirtiendo a NÚMERO)
+        const servicioCompleto = serviciosManager.getServicioById(
+          Number(servicioId)
+        );
 
-        } else if (servicioId) {
-            // Caso 2: Botón DINÁMICO (desde Supabase)
-            // Usamos el manager para obtener los datos (convirtiendo a NÚMERO)
-            const servicioCompleto = serviciosManager.getServicioById(Number(servicioId));
-
-            if (!servicioCompleto) {
-                console.error("No se encontró el servicio con ID:", servicioId);
-                if (typeof showToast === "function") {
-                    showToast("Error al seleccionar el servicio.", "danger");
-                }
-                return;
-            }
-            
-            servicioInfo = {
-                id: servicioCompleto.id,
-                title: servicioCompleto.title,
-                price: parseFloat(servicioCompleto.price),
-                duration: servicioCompleto.duration,
-                isGrupal: false
-            };
-        } else {
-            console.error("El botón de reserva no tiene datos (data-servicio o data-servicio-id).", button);
-            return;
+        if (!servicioCompleto) {
+          console.error("No se encontró el servicio con ID:", servicioId);
+          if (typeof showToast === "function") {
+            showToast("Error al seleccionar el servicio.", "danger");
+          }
+          return;
         }
 
-        // --- 3. Guardar en localStorage para la página de reserva ---
-        localStorage.setItem("servicioParaReservar", JSON.stringify(servicioInfo));
-        
-        console.log("Servicio guardado para reservar:", servicioInfo);
+        servicioInfo = {
+          id: servicioCompleto.id,
+          title: servicioCompleto.title,
+          price: parseFloat(servicioCompleto.price),
+          duration: servicioCompleto.duration,
+          isGrupal: false,
+        };
+      } else {
+        console.error(
+          "El botón de reserva no tiene datos (data-servicio o data-servicio-id).",
+          button
+        );
+        return;
+      }
 
-        // --- 4. Redirigir a la página de reservas ---
-        this.navigateTo("reservas");
+      // --- 3. Guardar en localStorage para la página de reserva ---
+      localStorage.setItem(
+        "servicioParaReservar",
+        JSON.stringify(servicioInfo)
+      );
 
+      console.log("Servicio guardado para reservar:", servicioInfo);
+
+      // --- 4. Redirigir a la página de reservas ---
+      this.navigateTo("reservas");
     } catch (error) {
-        console.error("Error en handleReservaClick:", error);
-        if (typeof showToast === "function") {
-            showToast("Hubo un problema al procesar la reserva.", "danger");
-        }
+      console.error("Error en handleReservaClick:", error);
+      if (typeof showToast === "function") {
+        showToast("Hubo un problema al procesar la reserva.", "danger");
+      }
     }
-}
+  }
 }

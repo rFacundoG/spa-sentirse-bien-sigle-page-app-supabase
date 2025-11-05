@@ -9,6 +9,7 @@ export class AuthManager {
     this.currentUser = null;
     this.isInitialized = false;
     this.authListeners = [];
+    this.isInitialCheck = true; // Flag para evitar toast en carga inicial
     this.initAuthListeners();
   }
 
@@ -81,6 +82,7 @@ export class AuthManager {
     this.isInitialized = true;
     this.authListeners.forEach((callback) => callback(this.currentUser));
     this.authListeners = [];
+    this.isInitialCheck = false; // Ya no es la carga inicial
   }
 
   async handleTokenRefreshed(session) {
@@ -122,7 +124,7 @@ export class AuthManager {
   }
 
   isProtectedPage(page) {
-    const protectedPages = ["perfil", "reservas"];
+    const protectedPages = ["perfil", "reservas", "admin"];
     return protectedPages.includes(page);
   }
 
