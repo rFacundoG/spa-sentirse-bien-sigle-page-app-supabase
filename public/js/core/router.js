@@ -244,8 +244,7 @@ export class Router {
   }
 
   initProfilePage() {
-    // Importar e inicializar el manager del perfil
-    import("../modules/perfil.js")
+    import("../modules/perfil/perfil.js")
       .then((module) => {
         module.initProfilePage();
       })
