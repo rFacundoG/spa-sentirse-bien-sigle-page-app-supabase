@@ -1,0 +1,177 @@
+/* css/productos.css (Versión Moderna) */
+
+/* =========================================== */
+/* === Estilos de Tarjeta de Producto (Heredados) == */
+/* =========================================== */
+
+/* Hacemos que la tarjeta de producto herede los estilos de la tarjeta de servicio */
+
+.product-page-container {
+    padding-top: 40px;
+}
+
+.product-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-secondary-background); /* Color de servicios */
+}
+
+.product-page-container .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.product-page-container .product-card {
+    cursor: pointer;
+}
+
+.product-page-container .product-card button,
+.product-page-container .product-card .admin-controls-placeholder {
+    cursor: default;
+}
+
+.product-page-container .product-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-page-container .product-card .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
+}
+
+.product-page-container .product-card .card-title {
+    color: var(--color-title);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.product-page-container .product-card .card-text {
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+    flex-grow: 1; 
+}
+
+.product-page-container .product-card .product-price {
+    color: var(--color-btn);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.product-page-container .product-card .btn-add-to-cart-styled {
+    background-color: var(--color-btn);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: 100%;
+    max-width: none;
+    margin-top: auto;
+}
+
+.product-page-container .product-card .btn-add-to-cart-styled:hover {
+    background-color: var(--color-btn-hover);
+    transform: scale(1.05);
+}
+
+
+/* =========================================== */
+/* === Estilos de Filtros (Versión Moderna) ==== */
+/* =========================================== */
+
+/* 1. Barra de Búsqueda Moderna */
+.product-page-container .modern-search-bar {
+    position: relative;
+}
+
+/* 2. Ícono de Lupa (dentro de la barra) */
+.product-page-container .modern-search-bar .bi-search {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-btn);
+    z-index: 2; /* Por si acaso */
+}
+
+/* 3. Input de Búsqueda (estilo suave) */
+.product-page-container .modern-search-bar .form-control {
+    border-radius: 30px;
+    border: 2px solid var(--color-btn);
+    background-color: var(--color-main-background);
+    color: var(--color-text);
+    padding-left: 2.8rem; /* Espacio para el ícono */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.product-page-container .modern-search-bar .form-control:focus {
+    box-shadow: 0 0 0 0.25rem var(--color-btn-hover, #6F5448 0.25);
+    border-color: var(--color-btn-hover);
+    background-color: white; /* Resaltar al enfocar */
+}
+
+.product-page-container .modern-search-bar .form-control::placeholder {
+    color: var(--color-btn);
+    opacity: 0.8;
+}
+
+/* 4. Filtros <select> (estilo "Píldora") */
+.product-page-container .modern-filter-pill {
+    background-color: var(--color-main-background);
+    color: var(--color-btn);
+    border: 2px solid var(--color-btn);
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    
+    /* Flecha custom (como antes) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238C6E5F' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.product-page-container .modern-filter-pill:hover {
+    background-color: var(--color-secondary-background);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.product-page-container .modern-filter-pill:focus {
+    box-shadow: 0 0 0 0.25rem var(--color-btn-hover, #6F5448 0.25);
+    border-color: var(--color-btn-hover);
+}
+
+/* 5. Botón de Limpiar (Solo Ícono, sutil) */
+.product-page-container .modern-clear-btn {
+    background-color: transparent;
+    border: 2px solid transparent;
+    color: var(--color-text);
+    border-radius: 50%;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    padding: 6px 10px;
+}
+
+.product-page-container .modern-clear-btn:hover {
+    background-color: var(--color-secondary-background);
+    color: var(--color-btn-hover);
+    transform: scale(1.1);
+}

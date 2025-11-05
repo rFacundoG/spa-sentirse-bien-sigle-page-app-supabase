@@ -10,6 +10,7 @@ export class Router {
       perfil: "./pages/perfil.html",
       reservas: "./pages/reservas.html",
       admin: "./pages/admin.html",
+      "producto-detalle": "./pages/producto-detalle.html",
     };
     this.currentPage = "home";
     this.isNavigating = false;
@@ -227,6 +228,12 @@ export class Router {
       case "reservas":
         this.initReservasPage();
         break;
+      case "productos":
+        this.initProductsPage();
+        break;
+      case "producto-detalle":
+        this.initProductDetailPage();
+        break;
 
       // Agregar más casos según sea necesario
     }
@@ -250,6 +257,26 @@ export class Router {
       })
       .catch((error) => {
         console.error("Error inicializando página de perfil:", error);
+      });
+  }
+
+  initProductsPage() {
+    import("../modules/productos.js")
+      .then((module) => {
+        module.initProductsPage();
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de productos:", error);
+      });
+  }
+
+  initProductDetailPage() {
+    import("../modules/producto-detalle.js")
+      .then((module) => {
+        module.initProductDetailPage();
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de detalle de producto:", error);
       });
   }
 

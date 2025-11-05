@@ -1,7 +1,100 @@
-<div class="container mt-5 pt-5 text-center">
-    <i class="bi bi-tools" style="font-size: 5rem; color: #6c757d;"></i>
-    <h1 class="mt-4">¡Estamos trabajando en esto!</h1>
-    <p class="lead text-muted">El apartado <strong>"Productos"</strong> está en desarrollo. Muy pronto podrás ver
-        nuestras ofertas especiales.</p>
-    <p class="text-muted">Gracias por tu paciencia</p>
+<div class="product-page-container">
+
+  <div class="container mt-5 pt-4">
+    <div class="row mb-3">
+      <div class="col">
+        <h2>Nuestros Productos</h2>
+      </div>
+      <div class="col text-end" id="admin-controls-container"></div>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+
+      <div class="col-md-5 mb-2">
+        <div class="modern-search-bar">
+          <i class="bi bi-search"></i>
+          <input type="search" id="search-input" class="form-control" placeholder="Buscar por nombre...">
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-2">
+        <select id="filter-type" class="form-select modern-filter-pill">
+          <option value="">Filtrar por tipo</option>
+        </select>
+      </div>
+
+      <div class="col-md-3 mb-2">
+        <select id="filter-category" class="form-select modern-filter-pill">
+          <option value="">Filtrar por categoría</option>
+        </select>
+      </div>
+
+      <div class="col-md-1 mb-2 text-center">
+        <button class="btn modern-clear-btn" id="clear-filters-btn" title="Limpiar filtros">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="col-12 text-center d-none" id="products-loader">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <div id="products-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
+
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="productModalLabel">Nuevo Producto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="product-form">
+              <input type="hidden" id="product-id">
+
+              <div class="mb-3">
+                <label for="product-name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="product-name" required>
+              </div>
+              <div class="mb-3">
+                <label for="product-description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="product-description" rows="3"></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="product-price" class="form-label">Precio</label>
+                  <input type="number" class="form-control" id="product-price" step="0.01" min="0" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="product-stock" class="form-label">Stock</label>
+                  <input type="number" class="form-control" id="product-stock" min="0" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="product-type" class="form-label">Tipo</label>
+                  <input type="text" class="form-control" id="product-type" placeholder="Ej: Estética">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="product-category" class="form-label">Categoría</label>
+                  <input type="text" class="form-control" id="product-category" placeholder="Ej: Skincare">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="product-image-url" class="form-label">URL de Imagen</label>
+                <input type="url" class="form-control" id="product-image-url" placeholder="https://...">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="save-product-btn">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
