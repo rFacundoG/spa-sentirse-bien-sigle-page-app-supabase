@@ -1,8 +1,6 @@
 import { showToast, initFloatingLabels, initPasswordToggles } from "./auth-utils.js";
 
 export function initAuthForms(authManager) {
-  console.log("Initializing auth forms...");
-
   initFloatingLabels();
   initPasswordToggles();
   setupLoginForm(authManager);
@@ -12,7 +10,6 @@ export function initAuthForms(authManager) {
 function setupLoginForm(authManager) {
   const formLogin = document.getElementById("formLogin");
   if (!formLogin) {
-    console.log("Login form not found");
     return;
   }
 
@@ -21,7 +18,6 @@ function setupLoginForm(authManager) {
 
   formLogin._submitHandler = async (e) => {
     e.preventDefault();
-    console.log("Login form submitted");
 
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
@@ -38,13 +34,11 @@ function setupLoginForm(authManager) {
   };
 
   formLogin.addEventListener("submit", formLogin._submitHandler);
-  console.log("Login form initialized");
 }
 
 function setupRegisterForm(authManager) {
   const formRegister = document.getElementById("formRegister");
   if (!formRegister) {
-    console.log("Register form not found");
     return;
   }
 
@@ -53,7 +47,6 @@ function setupRegisterForm(authManager) {
 
   formRegister._submitHandler = async (e) => {
     e.preventDefault();
-    console.log("Register form submitted");
 
     const name = document.getElementById("registerName").value;
     const email = document.getElementById("registerEmail").value;
@@ -71,7 +64,6 @@ function setupRegisterForm(authManager) {
   };
 
   formRegister.addEventListener("submit", formRegister._submitHandler);
-  console.log("Register form initialized");
 }
 
 function closeModal(modalId) {

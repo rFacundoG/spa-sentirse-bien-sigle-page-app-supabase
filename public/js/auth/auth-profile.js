@@ -2,8 +2,6 @@ import { supabase } from "../core/supabase.js";
 
 export async function loadUserProfile(authManager, userId) {
   try {
-    console.log("Loading user profile for:", userId);
-
     const { data, error } = await supabase
       .from("users")
       .select(
@@ -16,7 +14,6 @@ export async function loadUserProfile(authManager, userId) {
       console.error("Error loading user profile:", error);
 
       if (error.code === "PGRST116" || error.details?.includes("0 rows")) {
-        console.log("User profile not found, creating new one...");
         await createUserProfile(userId);
         return await getBasicUserProfile(authManager, userId);
       }
@@ -24,7 +21,6 @@ export async function loadUserProfile(authManager, userId) {
     }
 
     if (!data) {
-      console.log("No user profile data, creating...");
       await createUserProfile(userId);
       return await getBasicUserProfile(authManager, userId);
     }
@@ -35,7 +31,6 @@ export async function loadUserProfile(authManager, userId) {
     authManager.currentUser = data;
     window.currentUser = data;
 
-    console.log("User profile loaded successfully:", data);
     return data;
   } catch (error) {
     console.error("Error in loadUserProfile:", error);
@@ -92,7 +87,6 @@ async function enrichWithAuthMetadata(userData) {
 
 export async function createUserProfile(userId) {
   try {
-    console.log("Creating user profile for:", userId);
 
     const { data: authData } = await supabase.auth.getUser();
     if (!authData.user) {
@@ -112,8 +106,6 @@ export async function createUserProfile(userId) {
       updated_at: new Date().toISOString(),
     };
 
-    console.log("Inserting user profile:", userData);
-
     const { error } = await supabase.from("users").insert([userData]);
 
     if (error) {
@@ -121,7 +113,6 @@ export async function createUserProfile(userId) {
       return null;
     }
 
-    console.log("User profile created successfully");
     return userData;
   } catch (error) {
     console.error("Error in createUserProfile:", error);

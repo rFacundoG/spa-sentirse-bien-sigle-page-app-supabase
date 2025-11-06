@@ -23,7 +23,6 @@ export class AuthManager {
 
   initAuthListeners() {
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
       this.handleAuthChange(event, session);
     });
   }
@@ -139,7 +138,6 @@ export class AuthManager {
 
       if (error) throw error;
 
-      console.log("Login successful:", data);
       return { success: true, data };
     } catch (error) {
       console.error("Login error:", error);
@@ -168,8 +166,6 @@ export class AuthManager {
       });
 
       if (authError) throw authError;
-
-      console.log("Registration successful:", authData);
 
       if (authData.user) {
         await createUserProfile(authData.user.id, authData.user.email);
@@ -200,7 +196,6 @@ export class AuthManager {
       window.currentUser = null;
       updateAuthUI(this);
 
-      console.log("Logout successful");
       return { success: true };
     } catch (error) {
       console.error("Logout error:", error);

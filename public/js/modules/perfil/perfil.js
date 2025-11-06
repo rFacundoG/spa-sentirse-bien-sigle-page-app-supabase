@@ -26,7 +26,6 @@ export class ProfileManager {
 
   checkAuth() {
     if (!window.currentUser) {
-      console.log("No hay usuario autenticado - redirigiendo al home");
       return false;
     }
     return true;
