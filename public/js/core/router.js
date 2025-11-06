@@ -10,7 +10,6 @@ export class Router {
       perfil: "./pages/perfil.html",
       checkout: "./pages/checkout.html",
       admin: "./pages/admin.html",
-      "producto-detalle": "./pages/producto-detalle.html",
       privacidad: "./pages/privacidad.html",
       terminos: "./pages/terminos.html",
     };
@@ -230,8 +229,6 @@ export class Router {
       case "productos":
         this.initProductsPage();
         break;
-      case "producto-detalle":
-        this.initProductDetailPage();
       case "checkout":
         this.initCheckoutPage();
         break;
@@ -281,19 +278,6 @@ export class Router {
       })
       .catch((error) => {
         console.error("Error inicializando página de productos:", error);
-      });
-  }
-
-  initProductDetailPage() {
-    import("../modules/producto-detalle.js")
-      .then((module) => {
-        module.initProductDetailPage();
-      })
-      .catch((error) => {
-        console.error(
-          "Error inicializando página de detalle de producto:",
-          error
-        );
       });
   }
 

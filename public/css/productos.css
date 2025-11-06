@@ -22,20 +22,6 @@
     background-color: var(--color-secondary-background); /* Color de servicios */
 }
 
-.product-page-container .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-.product-page-container .product-card {
-    cursor: pointer;
-}
-
-.product-page-container .product-card button,
-.product-page-container .product-card .admin-controls-placeholder {
-    cursor: default;
-}
-
 .product-page-container .product-card .card-img-top {
     height: 200px;
     object-fit: cover;

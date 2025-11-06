@@ -163,22 +163,7 @@ function createProductCard(product) {
         </div>
     `;
 
-  // --- LÓGICA DE CLICKS ---
-
-  // 10. Listener en la tarjeta para ir a Detalles
-  card.addEventListener('click', (e) => {
-    // Si el click fue en un botón o en el área de admin, NO navegar
-    if (e.target.closest('button') || e.target.closest('.admin-controls-placeholder')) {
-      return;
-    }
-
-    // Si el click fue en cualquier otra parte de la tarjeta, ir a detalles
-    localStorage.setItem('selectedProductId', product.id);
-    // Usamos el método de tu router (simulando un click en link)
-    const routerLink = document.createElement('a');
-    routerLink.setAttribute('data-spa-link', 'producto-detalle');
-    routerLink.click();
-  });
+  // --- LÓGICA DE CLICKS ---  
 
   // 11. Listener para el botón de "Agregar al Carrito"
   const addToCartBtn = card.querySelector('.btn-add-to-cart');
