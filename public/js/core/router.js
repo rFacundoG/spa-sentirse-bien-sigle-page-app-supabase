@@ -241,7 +241,7 @@ export class Router {
   }
 
   initAdminPage() {
-    import("../modules/admin.js")
+    import("../admin/admin-manager.js")
       .then((module) => {
         const adminManager = module.initAdmin();
         adminManager.loadAdminData();
