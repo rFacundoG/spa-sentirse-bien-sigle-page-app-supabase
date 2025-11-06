@@ -8,7 +8,7 @@ export class Router {
       contacto: "./pages/contacto.html",
       productos: "./pages/productos.html",
       perfil: "./pages/perfil.html",
-      reservas: "./pages/reservas.html",
+      checkout: "./pages/checkout.html",
       admin: "./pages/admin.html",
       "producto-detalle": "./pages/producto-detalle.html",
       privacidad: "./pages/privacidad.html",
@@ -227,14 +227,13 @@ export class Router {
         break;
       case "admin":
         this.initAdminPage();
-      case "reservas":
-        this.initReservasPage();
-        break;
       case "productos":
         this.initProductsPage();
         break;
       case "producto-detalle":
         this.initProductDetailPage();
+      case "checkout":
+        this.initCheckoutPage();
         break;
 
       // Agregar más casos según sea necesario
@@ -278,7 +277,10 @@ export class Router {
         module.initProductDetailPage();
       })
       .catch((error) => {
-        console.error("Error inicializando página de detalle de producto:", error);
+        console.error(
+          "Error inicializando página de detalle de producto:",
+          error
+        );
       });
   }
 
@@ -328,13 +330,14 @@ export class Router {
     });
   }
 
-  initReservasPage() {
-    import("../modules/reservas.js")
+  initCheckoutPage() {
+   
+    import("../modules/checkout/index.js") 
       .then((module) => {
-        module.initReservasPage(); // Llama a la función exportada
+        module.initCheckoutPage(); 
       })
       .catch((error) => {
-        console.error("Error inicializando página de reservas:", error);
+        console.error("Error inicializando página de checkout:", error); 
       });
   }
 
@@ -349,14 +352,14 @@ export class Router {
       }
     });
   }
+  // (Dentro de la clase Router en router.js)
 
   async handleReservaClick(event) {
     const button = event.target.closest("button");
     if (!button) return;
 
-    // --- 1. Verificar autenticación (Tu lógica actual) ---
+    // 1. Verificar autenticación
     if (!window.currentUser) {
-      // Mostrar modal de login si no está autenticado
       try {
         const loginModal = new bootstrap.Modal(
           document.getElementById("loginModal")
@@ -368,16 +371,16 @@ export class Router {
       return;
     }
 
-    // --- 2. Obtener datos del servicio (Lógica unificada) ---
+    // 2. Obtener la info del servicio (Tu lógica unificada)
+    let servicioInfo;
     const servicioDataJSON = button.getAttribute("data-servicio");
     const servicioId = button.getAttribute("data-servicio-id");
 
-    let servicioInfo;
-
     try {
       if (servicioDataJSON) {
-        // Caso 1: Botón ESTÁTICO (Yoga, Hidromasaje)
+        // Lógica estática (Yoga, etc.)
         const data = JSON.parse(servicioDataJSON);
+        // Aseguramos un formato consistente
         servicioInfo = {
           id: data.id || `static-${data.title.toLowerCase().replace(" ", "-")}`,
           title: data.title,
@@ -386,50 +389,58 @@ export class Router {
           isGrupal: true,
         };
       } else if (servicioId) {
-        // Caso 2: Botón DINÁMICO (desde Supabase)
-        // Usamos el manager para obtener los datos (convirtiendo a NÚMERO)
-        const servicioCompleto = serviciosManager.getServicioById(
-          Number(servicioId)
-        );
-
-        if (!servicioCompleto) {
-          console.error("No se encontró el servicio con ID:", servicioId);
-          if (typeof showToast === "function") {
-            showToast("Error al seleccionar el servicio.", "danger");
-          }
-          return;
+        // Lógica dinámica (Supabase)
+        servicioInfo = serviciosManager.getServicioById(Number(servicioId));
+        if (!servicioInfo) {
+          throw new Error("Servicio dinámico no encontrado.");
         }
-
+        // Convertimos el objeto de Supabase a un objeto plano
         servicioInfo = {
-          id: servicioCompleto.id,
-          title: servicioCompleto.title,
-          price: parseFloat(servicioCompleto.price),
-          duration: servicioCompleto.duration,
+          id: servicioInfo.id,
+          title: servicioInfo.title,
+          price: parseFloat(servicioInfo.price),
+          duration: servicioInfo.duration,
           isGrupal: false,
         };
       } else {
-        console.error(
-          "El botón de reserva no tiene datos (data-servicio o data-servicio-id).",
-          button
-        );
+        throw new Error("El botón no tiene datos del servicio.");
+      }
+
+      // --- LÓGICA DE CARRITO DE SERVICIOS  ---
+
+      // 3. Obtener el carrito de SERVICIOS
+      const carritoJSON = localStorage.getItem("carritoServicios");
+      let carrito = carritoJSON ? JSON.parse(carritoJSON) : [];
+
+      // 4. (Opcional) Verificar si el item ya está en el carrito
+      const yaExiste = carrito.find((item) => item.id === servicioInfo.id);
+      if (yaExiste) {
+        this.showSafeToast("El servicio ya está en tu carrito", "info");
         return;
       }
 
-      // --- 3. Guardar en localStorage para la página de reserva ---
-      localStorage.setItem(
-        "servicioParaReservar",
-        JSON.stringify(servicioInfo)
-      );
+      // 5. Añadir el nuevo servicio al carrito
+      carrito.push(servicioInfo);
 
-      console.log("Servicio guardado para reservar:", servicioInfo);
+      // 6. Guardar el carrito de SERVICIOS actualizado
+      localStorage.setItem("carritoServicios", JSON.stringify(carrito));
 
-      // --- 4. Redirigir a la página de reservas ---
-      this.navigateTo("reservas");
+      // 7. Mostrar notificación de éxito
+      this.showSafeToast(`${servicioInfo.title} añadido al carrito`, "success");
     } catch (error) {
       console.error("Error en handleReservaClick:", error);
-      if (typeof showToast === "function") {
-        showToast("Hubo un problema al procesar la reserva.", "danger");
-      }
+      this.showSafeToast(
+        `Error al añadir al carrito: ${error.message}`,
+        "danger"
+      );
+    }
+  }
+
+  showSafeToast(message, type = "info") {
+    if (typeof window.showToast === "function") {
+      window.showToast(message, type);
+    } else {
+      alert(message);
     }
   }
 }

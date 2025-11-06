@@ -18,6 +18,10 @@
     transition: color 0.3s ease;
 }
 
+.checkout-icon{
+ color: white;
+}
+
 .nav-animated-link::after {
     content: '';
     position: absolute;

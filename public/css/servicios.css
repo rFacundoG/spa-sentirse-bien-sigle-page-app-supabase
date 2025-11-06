@@ -111,7 +111,7 @@
     font-size: 1.25rem;
 }
 
-.service-page-container .btn-reservar {
+.service-page-container .btn-reservar, #btn-confirmar-reserva {
     background-color: var(--color-btn);
     color: white;
     border: none;
@@ -135,6 +135,10 @@
     height: 80px;
     margin: 2rem auto;
     position: relative;
+}
+.checkout-page-container {
+  /* "Empuja" el contenido hacia abajo para que no quede detrás del nav */
+  padding-top: 100px; 
 }
 
 .service-page-container.custom-loader:before,
