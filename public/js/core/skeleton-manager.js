@@ -5,7 +5,6 @@ class SkeletonManager {
       admin: this.getAdminSkeleton(),
       reservas: this.getReservasSkeleton(),
     };
-    console.log("SkeletonManager inicializado");
   }
 
   showSkeleton(page) {
@@ -14,7 +13,6 @@ class SkeletonManager {
 
     if (mainContent) {
       mainContent.innerHTML = skeletonHTML;
-      console.log(`Skeleton mostrado para: ${page}`);
     } else {
       console.error("No se encontró #main-content");
     }

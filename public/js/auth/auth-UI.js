@@ -32,8 +32,6 @@ export function updateAuthUI(authManager) {
     authButtons.classList.remove("d-none");
     authUser.classList.add("d-none");
   }
-
-  console.log("Auth UI updated - User:", !!authManager.currentUser);
 }
 
 export function showAuthLoader(type, show) {

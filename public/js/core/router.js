@@ -70,7 +70,7 @@ export class Router {
 
         // Esperar a que AuthManager este inicializado
         if (window.App?.authManager && !window.App.authManager.isInitialized) {
-          console.log("⏳ Esperando inicialización de AuthManager...");
+          console.log("Esperando inicialización de AuthManager...");
           await new Promise((resolve) => {
             const timeout = setTimeout(() => {
               console.warn("Timeout esperando AuthManager");
@@ -235,6 +235,9 @@ export class Router {
       case "checkout":
         this.initCheckoutPage();
         break;
+      case "contacto":
+        this.initContactPage();
+        break;
 
       // Agregar más casos según sea necesario
     }
@@ -258,6 +261,16 @@ export class Router {
       })
       .catch((error) => {
         console.error("Error inicializando página de perfil:", error);
+      });
+  }
+
+  initContactPage() {
+    import("../modules/contacto.js")
+      .then((module) => {
+        module.initContactPage();
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de contacto:", error);
       });
   }
 
