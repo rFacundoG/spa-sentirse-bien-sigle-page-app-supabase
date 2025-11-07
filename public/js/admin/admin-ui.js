@@ -19,6 +19,25 @@ export class AdminUI {
   }
 
   setupAdminListeners() {
+    // Listener para abrir el modal de crear usuario
+    const createUserBtn = document.getElementById("btn-abrir-crear-usuario");
+    if (createUserBtn) {
+      createUserBtn.addEventListener("click", () => {
+        const modal = new bootstrap.Modal(
+          document.getElementById("createUserModal")
+        );
+        modal.show();
+      });
+    }
+
+    // Listener para el formulario de crear usuario
+    const createUserForm = document.getElementById("create-user-form");
+    if (createUserForm) {
+      createUserForm.addEventListener("submit", (e) =>
+        this.adminManager.users.handleCreateUser(e)
+      );
+    }
+    
     // Delegación de eventos para filtros de usuarios
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("filter-users-btn")) {
