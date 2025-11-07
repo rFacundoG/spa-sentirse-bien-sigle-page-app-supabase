@@ -37,7 +37,15 @@ export class AdminUI {
         this.adminManager.users.handleCreateUser(e)
       );
     }
-    
+
+    // Listener para el formulario de editar usuario
+    const editUserForm = document.getElementById("edit-user-form");
+    if (editUserForm) {
+      editUserForm.addEventListener("submit", (e) =>
+        this.adminManager.users.handleUpdateUser(e)
+      );
+    }
+
     // Delegación de eventos para filtros de usuarios
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("filter-users-btn")) {
@@ -53,6 +61,7 @@ export class AdminUI {
           if (filter === "all") filterText = "Todos";
           if (filter === "admin") filterText = "Administradores";
           if (filter === "user") filterText = "Usuarios";
+          if (filter === "ventas") filterText = "Ventas";
           dropdownToggle.textContent = filterText;
         }
       }

@@ -119,6 +119,14 @@
     font-size: 0.8rem;
 }
 
+.admin-page-container .badge-ventas {
+    background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
 /* Botones de acción */
 .admin-page-container .btn-admin-primary {
     background: linear-gradient(135deg, var(--color-btn) 0%, var(--color-btn-hover) 100%);

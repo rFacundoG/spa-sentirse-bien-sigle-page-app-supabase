@@ -101,6 +101,11 @@
                   Usuarios
                 </button>
               </li>
+              <li>
+                <button class="dropdown-item filter-users-btn" type="button" data-filter="ventas">
+                  Ventas
+                </button>
+              </li>
             </ul>
           </div>
         </div>
@@ -223,6 +228,7 @@
                   <select class="form-select" id="user-rol" name="rol" required>
                     <option value="user">Usuario</option>
                     <option value="admin">Administrador</option>
+                    <option value="ventas">Ventas</option>
                   </select>
                   <div class="invalid-feedback">Por favor selecciona un rol</div>
                 </div>
@@ -290,40 +296,80 @@
 
   <!-- Modal para editar usuario -->
   <div class="modal fade admin-modal" id="editUserModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Editar Usuario</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <form id="edit-user-form">
+        <form id="edit-user-form" novalidate>
+          <div class="modal-body">
             <input type="hidden" id="edit-user-id" />
-            <div class="mb-3">
-              <label for="edit-user-nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="edit-user-nombre" required />
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="edit-user-nombre" name="nombre" required>
+                  <div class="invalid-feedback">Por favor ingresa un nombre válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-apellido" class="form-label">Apellido</label>
+                  <input type="text" class="form-control" id="edit-user-apellido" name="apellido">
+                </div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="edit-user-email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="edit-user-email" required />
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="edit-user-email" readonly disabled>
+                  <div class="form-text">El email no se puede modificar</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="edit-user-telefono" name="telefono">
+                </div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="edit-user-rol" class="form-label">Rol</label>
-              <select class="form-select" id="edit-user-rol" required>
-                <option value="user">Usuario</option>
-                <option value="admin">Administrador</option>
-              </select>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-rol" class="form-label">Rol</label>
+                  <select class="form-select" id="edit-user-rol" name="rol" required>
+                    <option value="user">Usuario</option>
+                    <option value="admin">Administrador</option>
+                    <option value="ventas">Ventas</option>
+                  </select>
+                  <div class="invalid-feedback">Por favor selecciona un rol</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-is_active" class="form-label">Estado</label>
+                  <select class="form-select" id="edit-user-is_active" name="is_active" required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cancelar
-          </button>
-          <button type="button" class="btn btn-primary" id="update-user">
-            Actualizar
-          </button>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="btn-actualizar-usuario">
+              <span class="btn-text">Actualizar Usuario</span>
+              <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
