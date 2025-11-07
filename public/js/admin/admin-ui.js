@@ -46,6 +46,43 @@ export class AdminUI {
       );
     }
 
+    // Setup event listeners para profesionales
+    if (
+      this.adminManager.professionals &&
+      typeof this.adminManager.professionals.setupEventListeners === "function"
+    ) {
+      setTimeout(() => {
+        this.adminManager.professionals.setupEventListeners();
+      }, 100);
+    }
+
+    // Listener para abrir modal de agregar profesional
+    const addProModal = document.getElementById("addProfessionalModal");
+    if (addProModal) {
+      addProModal.addEventListener("show.bs.modal", () => {
+        const form = document.getElementById("add-professional-form");
+        if (form) {
+          form.reset();
+          form.classList.remove("was-validated");
+
+          // MOSTRAR SIEMPRE los campos de contraseña
+          const accountFields = document.getElementById("account-fields");
+          if (accountFields) {
+            accountFields.style.display = "block";
+          }
+
+          // HACER REQUERIDOS los campos de contraseña
+          const passwordFields = document.querySelectorAll(
+            "#account-fields input[type='password']"
+          );
+          passwordFields.forEach((field) => {
+            field.classList.remove("is-invalid");
+            field.required = true;
+          });
+        }
+      });
+    }
+
     // Delegación de eventos para filtros de usuarios
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("filter-users-btn")) {
