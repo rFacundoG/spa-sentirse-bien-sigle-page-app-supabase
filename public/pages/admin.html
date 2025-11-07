@@ -15,38 +15,20 @@
     <!-- Navegación de administración -->
     <ul class="nav nav-tabs mb-4 admin-tabs" id="adminTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button
-          class="nav-link active"
-          id="profesionales-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#profesionales"
-          type="button"
-          role="tab"
-        >
+        <button class="nav-link active" id="profesionales-tab" data-bs-toggle="tab" data-bs-target="#profesionales"
+          type="button" role="tab">
           <i class="bi bi-person-badge me-2"></i>Profesionales
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="usuarios-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#usuarios"
-          type="button"
-          role="tab"
-        >
+        <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button"
+          role="tab">
           <i class="bi bi-people me-2"></i>Usuarios
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="servicios-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#servicios"
-          type="button"
-          role="tab"
-        >
+        <button class="nav-link" id="servicios-tab" data-bs-toggle="tab" data-bs-target="#servicios" type="button"
+          role="tab">
           <i class="bi bi-journal-album me-2"></i>Servicios
         </button>
       </li>
@@ -56,17 +38,11 @@
     <div class="tab-content fade-in" id="adminTabContent">
       <!-- Pestaña de Profesionales -->
       <div class="tab-pane fade show active" id="profesionales" role="tabpanel">
-        <div
-          class="d-flex justify-content-between align-items-center mb-4 filter-controls"
-        >
+        <div class="d-flex justify-content-between align-items-center mb-4 filter-controls">
           <h5 class="mb-0 text-title">
             <i class="bi bi-list-check me-2"></i>Gestión de Profesionales
           </h5>
-          <button
-            class="btn btn-admin-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#addProfessionalModal"
-          >
+          <button class="btn btn-admin-primary" data-bs-toggle="modal" data-bs-target="#addProfessionalModal">
             <i class="bi bi-plus-circle me-2"></i>Agregar Profesional
           </button>
         </div>
@@ -98,41 +74,37 @@
 
       <!-- Pestaña de Usuarios -->
       <div class="tab-pane fade" id="usuarios" role="tabpanel">
-        <div
-          class="d-flex justify-content-between align-items-center mb-4 filter-controls"
-        >
+        <div class="d-flex justify-content-between align-items-center mb-4 filter-controls">
           <h5 class="mb-0 text-title">
             <i class="bi bi-person-lines-fill me-2"></i>Gestión de Usuarios
           </h5>
           <div class="btn-group dropdown-filter">
-            <button
-              class="btn btn-admin-outline dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-            >
+            <button class="btn btn-admin-primary me-2" id="btn-abrir-crear-usuario">
+              <i class="bi bi-person-plus me-2"></i>Crear Usuario
+            </button>
+            <button class="btn btn-admin-outline dropdown-toggle" type="button" data-bs-toggle="dropdown">
               Filtrar
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item filter-users" href="#" data-filter="all"
-                  >Todos</a
-                >
+                <button class="dropdown-item filter-users-btn" type="button" data-filter="all">
+                  Todos
+                </button>
               </li>
               <li>
-                <a
-                  class="dropdown-item filter-users"
-                  href="#"
-                  data-filter="admin"
-                  >Administradores</a
-                >
+                <button class="dropdown-item filter-users-btn" type="button" data-filter="admin">
+                  Administradores
+                </button>
               </li>
               <li>
-                <a
-                  class="dropdown-item filter-users"
-                  href="#"
-                  data-filter="user"
-                  >Usuarios</a
-                >
+                <button class="dropdown-item filter-users-btn" type="button" data-filter="user">
+                  Usuarios
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item filter-users-btn" type="button" data-filter="ventas">
+                  Ventas
+                </button>
               </li>
             </ul>
           </div>
@@ -163,15 +135,8 @@
       </div>
 
       <!--Pestaña de servicios-->
-      <div
-        class="tab-pane fade"
-        id="servicios"
-        role="tabpanel"
-        aria-labelledby="servicios-tab"
-      >
-        <div
-          class="d-flex justify-content-between align-items-center mb-4 filter-controls"
-        >
+      <div class="tab-pane fade" id="servicios" role="tabpanel" aria-labelledby="servicios-tab">
+        <div class="d-flex justify-content-between align-items-center mb-4 filter-controls">
           <h5 class="mb-0 text-title">
             <i class="bi bi-list-check me-2"></i>Gestión de Servicios
           </h5>
@@ -207,63 +172,109 @@
     </div>
   </div>
 
+  <!-- Modal Crear Usuario -->
+  <div class="modal fade admin-modal" id="createUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear Nuevo Usuario</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="create-user-form" novalidate>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="user-nombre" name="nombre" required>
+                  <div class="invalid-feedback">Por favor ingresa un nombre válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-apellido" class="form-label">Apellido</label>
+                  <input type="text" class="form-control" id="user-apellido" name="apellido">
+                </div>
+              </div>
+            </div>
+          
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="user-email" name="email" required>
+                  <div class="invalid-feedback">Por favor ingresa un email válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="user-telefono" name="telefono">
+                </div>
+              </div>
+            </div>
+          
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-password" class="form-label">Contraseña</label>
+                  <input type="password" class="form-control" id="user-password" name="password" required minlength="6">
+                  <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="user-rol" class="form-label">Rol</label>
+                  <select class="form-select" id="user-rol" name="rol" required>
+                    <option value="user">Usuario</option>
+                    <option value="admin">Administrador</option>
+                    <option value="ventas">Ventas</option>
+                  </select>
+                  <div class="invalid-feedback">Por favor selecciona un rol</div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-admin-primary" id="btn-crear-usuario">
+                <span class="btn-text">Crear Usuario</span>
+                <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal para agregar profesional -->
-  <div
-    class="modal fade admin-modal"
-    id="addProfessionalModal"
-    tabindex="-1"
-    aria-hidden="true"
-  >
+  <div class="modal fade admin-modal" id="addProfessionalModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Agregar Profesional</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="add-professional-form">
             <div class="mb-3">
               <label for="pro-nombre" class="form-label">Nombre</label>
-              <input
-                type="text"
-                class="form-control"
-                id="pro-nombre"
-                required
-              />
+              <input type="text" class="form-control" id="pro-nombre" required />
             </div>
             <div class="mb-3">
               <label for="pro-apellido" class="form-label">Apellido</label>
-              <input
-                type="text"
-                class="form-control"
-                id="pro-apellido"
-                required
-              />
+              <input type="text" class="form-control" id="pro-apellido" required />
             </div>
             <div class="mb-3">
-              <label for="pro-especialidad" class="form-label"
-                >Especialidad</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="pro-especialidad"
-                required
-              />
+              <label for="pro-especialidad" class="form-label">Especialidad</label>
+              <input type="text" class="form-control" id="pro-especialidad" required />
             </div>
             <div class="mb-3">
               <label for="pro-email" class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="pro-email"
-                required
-              />
+              <input type="email" class="form-control" id="pro-email" required />
             </div>
             <div class="mb-3">
               <label for="pro-telefono" class="form-label">Teléfono</label>
@@ -272,11 +283,7 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cancelar
           </button>
           <button type="button" class="btn btn-primary" id="save-professional">
@@ -288,87 +295,92 @@
   </div>
 
   <!-- Modal para editar usuario -->
-  <div
-    class="modal fade admin-modal"
-    id="editUserModal"
-    tabindex="-1"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
+  <div class="modal fade admin-modal" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Editar Usuario</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <form id="edit-user-form">
+        <form id="edit-user-form" novalidate>
+          <div class="modal-body">
             <input type="hidden" id="edit-user-id" />
-            <div class="mb-3">
-              <label for="edit-user-nombre" class="form-label">Nombre</label>
-              <input
-                type="text"
-                class="form-control"
-                id="edit-user-nombre"
-                required
-              />
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="edit-user-nombre" name="nombre" required>
+                  <div class="invalid-feedback">Por favor ingresa un nombre válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-apellido" class="form-label">Apellido</label>
+                  <input type="text" class="form-control" id="edit-user-apellido" name="apellido">
+                </div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="edit-user-email" class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="edit-user-email"
-                required
-              />
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="edit-user-email" readonly disabled>
+                  <div class="form-text">El email no se puede modificar</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="edit-user-telefono" name="telefono">
+                </div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="edit-user-rol" class="form-label">Rol</label>
-              <select class="form-select" id="edit-user-rol" required>
-                <option value="user">Usuario</option>
-                <option value="admin">Administrador</option>
-              </select>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-rol" class="form-label">Rol</label>
+                  <select class="form-select" id="edit-user-rol" name="rol" required>
+                    <option value="user">Usuario</option>
+                    <option value="admin">Administrador</option>
+                    <option value="ventas">Ventas</option>
+                  </select>
+                  <div class="invalid-feedback">Por favor selecciona un rol</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-user-is_active" class="form-label">Estado</label>
+                  <select class="form-select" id="edit-user-is_active" name="is_active" required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Cancelar
-          </button>
-          <button type="button" class="btn btn-primary" id="update-user">
-            Actualizar
-          </button>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="btn-actualizar-usuario">
+              <span class="btn-text">Actualizar Usuario</span>
+              <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
- <!-- Modal de servicios -->
-  <div
-    class="modal fade admin-modal"
-    id="servicioModal"
-    tabindex="-1"
-    aria-hidden="true"
-    data-bs-backdrop="static"
-  >
+  <!-- Modal de servicios -->
+  <div class="modal fade admin-modal" id="servicioModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="servicioModalTitle">Crear Servicio</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <form id="servicio-form" novalidate>
@@ -379,20 +391,13 @@
               <div class="col-md-8">
                 <div class="mb-3">
                   <label for="servicio-title" class="form-label">Título</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="servicio-title"
-                    required
-                  />
+                  <input type="text" class="form-control" id="servicio-title" required />
                   <div class="invalid-feedback">El título es obligatorio.</div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="mb-3">
-                  <label for="servicio-category" class="form-label"
-                    >Categoría</label
-                  >
+                  <label for="servicio-category" class="form-label">Categoría</label>
                   <select class="form-select" id="servicio-category" required>
                     <option value="" disabled selected>Selecciona...</option>
                     <option value="masajes">Masajes</option>
@@ -413,46 +418,23 @@
             </div>
 
             <div class="mb-3">
-              <label for="servicio-description" class="form-label"
-                >Descripción</label
-              >
-              <textarea
-                class="form-control"
-                id="servicio-description"
-                rows="3"
-                required
-              ></textarea>
+              <label for="servicio-description" class="form-label">Descripción</label>
+              <textarea class="form-control" id="servicio-description" rows="3" required></textarea>
               <div class="invalid-feedback">La descripción es obligatoria.</div>
             </div>
 
             <div class="row">
               <div class="col-md-4">
                 <div class="mb-3">
-                  <label for="servicio-price" class="form-label"
-                    >Precio (ej. 50000)</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="servicio-price"
-                    min="0"
-                    required
-                  />
+                  <label for="servicio-price" class="form-label">Precio (ej. 50000)</label>
+                  <input type="number" class="form-control" id="servicio-price" min="0" required />
                   <div class="invalid-feedback">El precio es obligatorio.</div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="mb-3">
-                  <label for="servicio-duration" class="form-label"
-                    >Duración (minutos)</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="servicio-duration"
-                    min="0"
-                    required
-                  />
+                  <label for="servicio-duration" class="form-label">Duración (minutos)</label>
+                  <input type="number" class="form-control" id="servicio-duration" min="0" required />
                   <div class="invalid-feedback">
                     La duración es obligatoria.
                   </div>
@@ -460,12 +442,7 @@
               </div>
               <div class="col-md-4 d-flex align-items-center pt-3">
                 <div class="form-check form-switch fs-5">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="servicio-active"
-                    checked
-                  />
+                  <input class="form-check-input" type="checkbox" id="servicio-active" checked />
                   <label class="form-check-label" for="servicio-active">
                     Servicio Activo
                   </label>
@@ -474,32 +451,17 @@
             </div>
 
             <div class="mb-3">
-              <label for="servicio-image_url" class="form-label"
-                >URL de la Imagen (Opcional)</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="servicio-image_url"
-                placeholder="https://..."
-              />
+              <label for="servicio-image_url" class="form-label">URL de la Imagen (Opcional)</label>
+              <input type="text" class="form-control" id="servicio-image_url" placeholder="https://..." />
               <div class="invalid-feedback">Debe ser una URL válida.</div>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Cancelar
             </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              id="btn-save-servicio"
-            >
+            <button type="submit" class="btn btn-primary" id="btn-save-servicio">
               Guardar Cambios
             </button>
           </div>

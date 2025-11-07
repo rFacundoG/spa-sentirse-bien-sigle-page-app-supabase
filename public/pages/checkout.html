@@ -5,6 +5,7 @@
     <div class="row g-5">
       <div class="col-lg-8">
         <ul class="nav nav-tabs nav-fill mb-4" id="checkoutTabs" role="tablist">
+          
           <li class="nav-item" role="presentation">
             <button
               class="nav-link active"
@@ -19,6 +20,7 @@
               <i class="bi bi-journal-album me-2"></i>Mis Servicios
             </button>
           </li>
+          
           <li class="nav-item" role="presentation">
             <button
               class="nav-link"
@@ -29,7 +31,6 @@
               role="tab"
               aria-controls="productos-pane"
               aria-selected="false"
-              disabled
             >
               <i class="bi bi-bag me-2"></i>Mis Productos
             </button>
@@ -37,6 +38,7 @@
         </ul>
 
         <div class="tab-content" id="checkoutTabContent">
+          
           <div
             class="tab-pane fade show active"
             id="servicios-pane"
@@ -49,7 +51,6 @@
                 <div id="servicios-items-container">
                   <p class="text-muted">Cargando carrito...</p>
                 </div>
-
                 <hr class="my-4" />
                 <h5 class="card-title mb-3">Modalidad</h5>
                 <p class="text-muted">
@@ -66,34 +67,6 @@
                     checked
                   />
                 </div>
-
-                <h5 class="card-title mt-4 mb-3">Método de Pago</h5>
-                <div id="payment-options-wrapper">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="payment"
-                      id="payment-debit"
-                      value="debit_card"
-                    />
-                    <label class="form-check-label" for="payment-debit"
-                      >Tarjeta de Débito (15% OFF)</label
-                    >
-                  </div>
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="payment"
-                      id="payment-cash"
-                      value="cash"
-                    />
-                    <label class="form-check-label" for="payment-cash"
-                      >Efectivo</label
-                    >
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -108,9 +81,16 @@
               <div class="card-body">
                 <h5 class="card-title mb-3">Productos en tu carrito</h5>
                 <div id="productos-items-container">
-                  <p class="text-muted">
-                    La tienda de productos estará disponible próximamente.
-                  </p>
+                  <p class="text-muted">Cargando productos...</p>
+                </div>
+                <hr class="my-4" />
+                <div class="d-flex justify-content-between fw-bold mb-2">
+                  <span>Subtotal Productos:</span>
+                  <span id="productos-subtotal">$0</span>
+                </div>
+                <div class="d-flex justify-content-between text-success">
+                  <span>Descuento Productos:</span>
+                  <span id="productos-descuento">-$0</span>
                 </div>
               </div>
             </div>
@@ -121,8 +101,38 @@
       <div class="col-lg-4">
         <div class="card service-card" style="position: sticky; top: 100px">
           <div class="card-body">
-            <h4 class="card-title mb-4">Resumen de Pago</h4>
 
+            <h4 class="card-title mb-3">Método de Pago</h4>
+            <div id="payment-options-wrapper" class="mb-4">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="payment"
+                  id="payment-debit"
+                  value="debit_card"
+                />
+                <label class="form-check-label" for="payment-debit" id="payment-debit-label">
+                  Tarjeta de Débito (15% OFF)
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="payment"
+                  id="payment-cash"
+                  value="cash"
+                />
+                <label class="form-check-label" for="payment-cash" id="payment-cash-label">
+                  Efectivo
+                </label>
+              </div>
+            </div>
+
+            <hr>
+
+            <h4 class="card-title mb-4">Resumen de Pago</h4>
             <ul class="list-unstyled mb-4">
               <li class="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
@@ -142,9 +152,10 @@
               Selecciona un método de pago.
             </div>
 
-            <button class="btn-confirmar w-100" id="btn-confirmar-reserva">
+            <button class="btn-confirmar w-100" id="btn-confirmar-checkout">
               Confirmar Reserva
             </button>
+            
           </div>
         </div>
       </div>

@@ -119,6 +119,14 @@
     font-size: 0.8rem;
 }
 
+.admin-page-container .badge-ventas {
+    background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
 /* Botones de acción */
 .admin-page-container .btn-admin-primary {
     background: linear-gradient(135deg, var(--color-btn) 0%, var(--color-btn-hover) 100%);
@@ -290,6 +298,20 @@
 /* Animaciones suaves */
 .admin-page-container .fade-in {
     animation: fadeIn 0.5s ease-in;
+}
+
+.admin-page-container .btn-admin-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.admin-page-container .btn-loader {
+    margin-left: 8px;
+}
+
+.admin-page-container #btn-crear-usuario {
+    position: relative;
+    min-width: 120px;
 }
 
 @keyframes fadeIn {
