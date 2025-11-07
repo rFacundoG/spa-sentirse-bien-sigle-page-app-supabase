@@ -27,9 +27,14 @@ export function renderCartItems(cartItems) {
     if (isNaN(itemPrice)) return;
 
     container.innerHTML += `
-      <div class="d-flex justify-content-between mb-2">
-        <span class="text-truncate" style="max-width: 70%;">${item.title}</span>
-        <span class="fw-bold">${formatPrice(itemPrice)}</span>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-truncate" style="max-width: 65%;">${item.title}</span>
+        <div class="d-flex align-items-center">
+          <span class="fw-bold me-3">${formatPrice(itemPrice)}</span>
+          <button class="btn btn-sm btn-outline-danger btn-remove-item" data-item-id="${item.id}">
+            <i class="bi bi-trash" style="pointer-events: none;"></i>
+          </button>
+        </div>
       </div>
     `;
     subtotal += itemPrice;
