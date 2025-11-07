@@ -12,6 +12,7 @@ export class AdminUsers {
       const { data: users, error } = await supabase
         .from("users")
         .select("*")
+        .neq("rol", "professional") // Excluir profesionales
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -130,7 +131,6 @@ export class AdminUsers {
 
   async editUser(id) {
     try {
-
       const { data: user, error } = await supabase
         .from("users")
         .select("*")
