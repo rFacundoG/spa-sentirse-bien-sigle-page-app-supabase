@@ -344,6 +344,12 @@ function setupAdminListeners() {
     productForm.reset();
     document.getElementById('product-id').value = '';
     document.getElementById('productModalLabel').textContent = 'Nuevo Producto';
+
+    // NUEVO: Limpiar el input de archivo y ocultar la vista previa
+    document.getElementById('product-image-file').value = null;
+    document.getElementById('product-image-url').value = '';
+    document.getElementById('image-preview-wrapper').style.display = 'none';
+
     productModal.show();
   });
 
@@ -397,17 +403,34 @@ async function handleProductSubmit(e) {
   const form = e.target;
   const productId = form.querySelector('#product-id').value;
 
-  const productData = {
-    name: form.querySelector('#product-name').value,
-    description: form.querySelector('#product-description').value,
-    price: parseFloat(form.querySelector('#product-price').value),
-    stock: parseInt(form.querySelector('#product-stock').value),
-    type: form.querySelector('#product-type').value,
-    category: form.querySelector('#product-category').value,
-    image_url: form.querySelector('#product-image-url').value,
-  };
+  // Obtenemos el archivo del nuevo input (puede estar vacío)
+  const imageFile = form.querySelector('#product-image-file').files[0];
+  // Obtenemos la URL de la imagen (si ya existía, para editar)
+  let imageUrl = form.querySelector('#product-image-url').value;
 
   try {
+    // --- LÓGICA DE SUBIDA DE IMAGEN ---
+    if (imageFile) {
+      // Si el usuario seleccionó un archivo nuevo, lo subimos
+      const newImageUrl = await uploadProductImage(imageFile);
+      if (newImageUrl) {
+        imageUrl = newImageUrl; // Sobrescribimos la URL con la nueva
+      }
+    }
+    // Si no seleccionó archivo, 'imageUrl' mantendrá su valor
+    // (que será la URL antigua si editamos, o vacío si es un producto nuevo sin imagen)
+    // ------------------------------------
+
+    const productData = {
+      name: form.querySelector('#product-name').value,
+      description: form.querySelector('#product-description').value,
+      price: parseFloat(form.querySelector('#product-price').value),
+      stock: parseInt(form.querySelector('#product-stock').value),
+      type: form.querySelector('#product-type').value,
+      category: form.querySelector('#product-category').value,
+      image_url: imageUrl, // Guardamos la URL final (nueva o la antigua)
+    };
+
     let result;
     if (productId) {
       result = await supabase.from('products').update(productData).eq('id', productId);
@@ -418,13 +441,13 @@ async function handleProductSubmit(e) {
     if (result.error) throw result.error;
 
     productModal.hide();
+    form.querySelector('#product-image-file').value = null; // Limpiar el input de archivo
 
-    // Recargar productos (manteniendo los filtros) y repoblar filtros
     await populateFilters();
     await applyFiltersAndRender();
 
   } catch (error) {
-    console.error('Error guardando producto:', error);
+    console.error('Error guardando producto (con subida de imagen):', error);
     alert('Error al guardar el producto: ' + error.message);
   }
 }
@@ -449,12 +472,28 @@ async function handleEditClick(productId) {
     document.getElementById('product-stock').value = product.stock;
     document.getElementById('product-type').value = product.type;
     document.getElementById('product-category').value = product.category;
+
+    // Guardamos la URL actual en el campo oculto
     document.getElementById('product-image-url').value = product.image_url;
+
+    // Limpiar el selector de archivo
+    document.getElementById('product-image-file').value = null;
+
+    // Mostrar la vista previa de la imagen
+    const previewWrapper = document.getElementById('image-preview-wrapper');
+    const previewImg = document.getElementById('image-preview');
+    if (product.image_url) {
+      previewImg.src = product.image_url;
+      previewWrapper.style.display = 'block';
+    } else {
+      previewWrapper.style.display = 'none';
+    }
 
     document.getElementById('productModalLabel').textContent = 'Editar Producto';
     productModal.show();
 
-  } catch (error) {
+  } catch (error)
+  {
     console.error('Error obteniendo producto para editar:', error);
     alert('Error: ' + error.message);
   }
@@ -480,4 +519,44 @@ async function handleDeleteClick(productId) {
     console.error('Error eliminando producto:', error);
     alert('Error: ' + error.message);
   }
+}
+
+/**
+ * Sube un archivo de imagen al Storage de Supabase.
+ * @param {File} file - El archivo a subir.
+ * @returns {Promise<string>} - La URL pública de la imagen subida.
+ */
+async function uploadProductImage(file) {
+  if (!file) return null;
+
+  // Crea un nombre único para evitar colisiones
+  const fileName = `product-${Date.now()}-${file.name}`;
+  const filePath = `${fileName}`; // Ruta dentro del bucket
+
+  console.log("Subiendo imagen:", filePath);
+
+  // 1. Subir el archivo al bucket 'product-images'
+  const { error: uploadError } = await supabase.storage
+    .from('product-images') // El nombre de tu bucket
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false // no sobrescribir
+    });
+
+  if (uploadError) {
+    console.error("Error al subir imagen:", uploadError);
+    throw uploadError;
+  }
+
+  // 2. Obtener la URL pública del archivo que acabamos de subir
+  const { data } = supabase.storage
+    .from('product-images')
+    .getPublicUrl(filePath);
+
+  if (!data || !data.publicUrl) {
+    throw new Error("No se pudo obtener la URL pública después de la subida.");
+  }
+
+  console.log("URL pública obtenida:", data.publicUrl);
+  return data.publicUrl;
 }
