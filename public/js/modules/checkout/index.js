@@ -1,6 +1,5 @@
 // public/js/modules/checkout/index.js
 
-// 1. IMPORTAR TODOS LOS MÓDULOS
 import * as ui from "./ui.js";
 import * as api from "./api.js";
 import { ReservationContext } from "./context.js";
@@ -10,42 +9,31 @@ import {
   NoDiscountStrategy,
 } from "../payment/strategies.js";
 
-// 2. DEFINIR EL ESTADO DE LA PÁGINA
-let cartItems = []; // Solo para el carrito de servicios
-let reservationContext; // El "contexto" que maneja el Patrón Strategy
+let cartItems = [];
+let reservationContext;
 
 /**
  * FUNCIÓN PRINCIPAL (Llamada por el Router)
- * Orquesta la inicialización de la página de checkout.
  */
 export function initCheckoutPage() {
-  // 1. Cargar el carrito de SERVICIOS
   const carritoJSON = localStorage.getItem("carritoServicios");
   cartItems = carritoJSON ? JSON.parse(carritoJSON) : [];
 
-  // 2. Renderizar el carrito en la UI y obtener el subtotal
-  // (ui.renderCartItems ahora apunta a '#servicios-items-container')
-  const subtotal = ui.renderCartItems(cartItems);
+  // 1. Crear el Contexto (se crea una sola vez)
+  reservationContext = new ReservationContext(0); // Inicia en 0
 
-  // 3. Crear el Contexto de Descuento con el subtotal
-  reservationContext = new ReservationContext(subtotal);
-
-  // 4. Calcular y mostrar los totales iniciales (con 'NoDiscountStrategy')
-  updateTotals();
-
-  // 5. Configurar los event listeners
+  // 2. Configurar listeners (incluyendo el de eliminar)
   setupListeners();
 
-  // 6. Validar el estado inicial
-  const { delivery_method, payment_method } = ui.getFormValues();
-  ui.validateBusinessRules(payment_method, delivery_method);
+  // 3. Renderizar y validar el estado inicial
+  refreshCheckoutState();
 }
 
 /**
- * Configura los listeners para los inputs y el botón de confirmar.
+ * NUEVA: Configura todos los listeners de la página.
  */
 function setupListeners() {
-  // Escuchar cambios en CUALQUIER radio de pago (ya no escucha 'delivery')
+  // Listener para radios de pago
   const radioInputs = document.querySelectorAll(
     '#servicios-pane input[name="payment"]'
   );
@@ -53,22 +41,65 @@ function setupListeners() {
     input.addEventListener("change", handleFormChange);
   });
 
-  // Escuchar el clic en el botón de confirmar
+  // Listener para el botón de confirmar
   const confirmButton = document.getElementById("btn-confirmar-reserva");
   confirmButton.addEventListener("click", handleConfirmBooking);
+
+  // NUEVO: Listener para los botones de eliminar (usando delegación)
+  const itemsContainer = document.getElementById("servicios-items-container");
+  if (itemsContainer) {
+    itemsContainer.addEventListener("click", handleRemoveItemClick);
+  }
 }
 
 /**
- * Se dispara CADA VEZ que el usuario cambia una opción de PAGO.
+ * NUEVA: Se dispara al hacer clic en el contenedor de items.
+ */
+function handleRemoveItemClick(event) {
+  const deleteButton = event.target.closest(".btn-remove-item");
+  if (!deleteButton) return; // No se hizo clic en un botón de borrar
+
+  const itemId = deleteButton.getAttribute("data-item-id");
+
+  // 1. Filtrar el array local (convertir a string para comparación segura)
+  cartItems = cartItems.filter(
+    (item) => item.id.toString() !== itemId.toString()
+  );
+
+  // 2. Actualizar localStorage
+  localStorage.setItem("carritoServicios", JSON.stringify(cartItems));
+
+  // 3. Refrescar toda la UI de la página
+  refreshCheckoutState();
+  showSafeToast("Servicio eliminado del carrito", "info");
+}
+
+/**
+ * NUEVA: Función central que actualiza toda la UI.
+ */
+function refreshCheckoutState() {
+  // 1. Renderizar carrito y obtener nuevo subtotal
+  const subtotal = ui.renderCartItems(cartItems);
+
+  // 2. Actualizar el subtotal en el contexto
+  reservationContext.subtotal = subtotal;
+
+  // 3. Recalcular y mostrar totales
+  updateTotals();
+
+  // 4. Re-validar las reglas (habilita/deshabilita confirmar)
+  const { delivery_method, payment_method } = ui.getFormValues();
+  ui.validateBusinessRules(payment_method, delivery_method);
+}
+
+/**
+ * (Simplificada) Se dispara al cambiar el método de pago.
  */
 function handleFormChange() {
   const { delivery_method, payment_method } = ui.getFormValues();
-
-  // 1. Validar reglas de negocio
-  // (ui.js sabe que 'delivery_method' siempre es 'in_spa')
   ui.validateBusinessRules(payment_method, delivery_method);
 
-  // 2. Actualizar la Estrategia de Descuento
+  // Actualizar la Estrategia de Descuento
   if (payment_method === "debit_card") {
     reservationContext.setStrategy(new DebitCardStrategy());
   } else if (payment_method === "cash") {
@@ -77,12 +108,11 @@ function handleFormChange() {
     reservationContext.setStrategy(new NoDiscountStrategy());
   }
 
-  // 3. Recalcular y mostrar el total
   updateTotals();
 }
 
 /**
- * Recalcula y actualiza la UI con los totales (Subtotal, Descuento, Total).
+ * (Sin cambios) Recalcula y actualiza la UI con los totales.
  */
 function updateTotals() {
   const subtotal = reservationContext.subtotal;
@@ -96,18 +126,25 @@ function updateTotals() {
 }
 
 /**
- * Maneja el clic final en "Confirmar Reserva".
+ * (Sin cambios) Maneja el clic final en "Confirmar Reserva".
  */
 async function handleConfirmBooking() {
+  
+  if (cartItems.length === 0) {
+    showSafeToast(
+      "Tu carrito está vacío. Añade un servicio para reservar.",
+      "warning"
+    );
+    return; // Detiene la ejecución
+  }
+
   const { delivery_method, payment_method } = ui.getFormValues();
 
-  // 1. Validar por última vez
   if (!ui.validateBusinessRules(payment_method, delivery_method)) {
     showSafeToast("Por favor, corrige los errores en tu pedido.", "danger");
     return;
   }
 
-  // 2. Verificar autenticación
   if (!window.currentUser) {
     showSafeToast("Debes iniciar sesión para reservar.", "warning");
     return;
@@ -115,29 +152,26 @@ async function handleConfirmBooking() {
 
   const { discountAmount, newTotal } = reservationContext.calculateTotal();
 
-  // 3. Preparar el objeto para la API
   const bookingData = {
     user_id: window.currentUser.id,
     subtotal: reservationContext.subtotal,
     discount_applied: discountAmount,
     total_price: newTotal,
     payment_method: payment_method,
-    delivery_method: delivery_method, // ui.getFormValues() leerá 'in_spa' del input oculto
+    delivery_method: delivery_method,
   };
 
   try {
     const confirmBtn = document.getElementById("btn-confirmar-reserva");
     confirmBtn.disabled = true;
-    confirmBtn.innerHTML = "Procesando..."; // Feedback visual
+    confirmBtn.innerHTML = "Procesando...";
 
-    // 4. Llamar a la API (solo pasamos el carrito de SERVICIOS)
     const result = await api.saveBooking(bookingData, cartItems);
 
     if (result.success) {
       showSafeToast("¡Reserva creada con éxito!", "success");
-      // 5. Limpiar el carrito de SERVICIOS y redirigir
       localStorage.removeItem("carritoServicios");
-      window.location.hash = "#home"; // Usamos hash para el router
+      window.location.hash = "#home";
     } else {
       throw new Error("La API de guardado no tuvo éxito.");
     }
@@ -152,13 +186,12 @@ async function handleConfirmBooking() {
 }
 
 /**
- * Función helper para mostrar notificaciones (toast) de forma segura.
+ * (Sin cambios) Función helper para mostrar notificaciones (toast) de forma segura.
  */
 function showSafeToast(message, type = "info") {
   if (typeof window.showToast === "function") {
     window.showToast(message, type);
   } else {
-    // Fallback si la función global no existe
     alert(message);
   }
 }
