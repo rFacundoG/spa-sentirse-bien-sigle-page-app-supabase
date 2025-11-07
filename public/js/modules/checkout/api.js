@@ -2,25 +2,25 @@
 import { supabase } from "../../core/supabase.js";
 
 export async function saveBooking(bookingData, cartItems) {
-  // Mapeamos el carrito al JSON que espera la función SQL
+  // 1. Mapeamos el carrito al JSON (esto no cambia)
   const items_json = cartItems.map((item) => ({
     service_id: item.id,
     price_at_purchase: item.price,
-    // Dejamos el 'professional_id' como null por ahora
-    // En el futuro, el 'item' del carrito tendrá este dato
-    professional_id: item.professional_id || null 
+    professional_id: item.professional_id || null,
   }));
 
+  // 2. Preparamos los argumentos para la función RPC (¡ESTO CAMBIA!)
+  //    Ahora coincide con la nueva función SQL del Paso 2
   const rpc_args = {
     user_id_input: bookingData.user_id,
-    total_price_input: bookingData.total_price,
-    subtotal_input: bookingData.subtotal,
-    discount_input: bookingData.discount_applied,
+    subtotal_input: bookingData.subtotal, // <-- Único valor de precio
     payment_method_input: bookingData.payment_method,
     delivery_method_input: bookingData.delivery_method,
     items: items_json,
+    appointment_datetime_input: bookingData.appointment_datetime,
   };
 
+  // 3. Llamamos a la función 'create_booking_with_items'
   const { data, error } = await supabase.rpc(
     "create_booking_with_items",
     rpc_args
@@ -31,6 +31,7 @@ export async function saveBooking(bookingData, cartItems) {
     throw error;
   }
 
+  console.log("Reserva creada con éxito, ID:", data);
   return { success: true, bookingId: data };
 }
 
@@ -42,7 +43,6 @@ export async function saveBooking(bookingData, cartItems) {
  * @param {Array} productItems - El carrito de productos
  */
 export async function saveProductPurchase(purchaseData, productItems) {
-  
   try {
     // --- PASO 1: Crear la 'booking' principal ---
     // (Esto registra la transacción monetaria)
@@ -63,7 +63,10 @@ export async function saveProductPurchase(purchaseData, productItems) {
       .single();
 
     if (bookingError) {
-      console.error("Error al crear la booking (Paso 1 - Productos):", bookingError);
+      console.error(
+        "Error al crear la booking (Paso 1 - Productos):",
+        bookingError
+      );
       throw bookingError;
     }
 
@@ -71,7 +74,7 @@ export async function saveProductPurchase(purchaseData, productItems) {
     console.log("Booking (para productos) creada con ID:", newBookingId);
 
     // --- PASO 2: Guardar los items en la nueva tabla 'booking_products' ---
-    
+
     // Mapeamos el carrito de PRODUCTOS a la nueva tabla
     const product_json = productItems.map((item) => ({
       booking_id: newBookingId,
@@ -86,16 +89,21 @@ export async function saveProductPurchase(purchaseData, productItems) {
       .insert(product_json);
 
     if (itemsError) {
-      console.error("Error al guardar los items de producto (Paso 2):", itemsError);
+      console.error(
+        "Error al guardar los items de producto (Paso 2):",
+        itemsError
+      );
       // (En un sistema real, aquí se debería borrar la 'booking' creada)
       throw itemsError;
     }
 
     console.log("Items de producto guardados exitosamente.");
     return { success: true, bookingId: newBookingId };
-
   } catch (error) {
-    console.error("Error en el proceso de 'saveProductPurchase':", error.message);
+    console.error(
+      "Error en el proceso de 'saveProductPurchase':",
+      error.message
+    );
     return { success: false, error: error };
   }
 }

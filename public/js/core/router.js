@@ -9,6 +9,7 @@ export class Router {
       productos: "./pages/productos.html",
       perfil: "./pages/perfil.html",
       checkout: "./pages/checkout.html",
+      reservas: "./pages/mis-reservas.html",
       admin: "./pages/admin.html",
       privacidad: "./pages/privacidad.html",
       terminos: "./pages/terminos.html",
@@ -141,7 +142,7 @@ export class Router {
   }
 
   requiresAuth(page) {
-    const protectedPages = ["perfil", "reservas", "admin"];
+    const protectedPages = ["perfil", "checkout", "reservas", "admin"];
     return protectedPages.includes(page);
   }
 
@@ -234,6 +235,9 @@ export class Router {
         break;
       case "contacto":
         this.initContactPage();
+        break;
+      case "reservas":
+        this.initMisReservasPage();
         break;
 
       // Agregar más casos según sea necesario
@@ -328,13 +332,12 @@ export class Router {
   }
 
   initCheckoutPage() {
-   
-    import("../modules/checkout/index.js") 
+    import("../modules/checkout/index.js")
       .then((module) => {
-        module.initCheckoutPage(); 
+        module.initCheckoutPage();
       })
       .catch((error) => {
-        console.error("Error inicializando página de checkout:", error); 
+        console.error("Error inicializando página de checkout:", error);
       });
   }
 
@@ -431,6 +434,15 @@ export class Router {
         "danger"
       );
     }
+  }
+  initMisReservasPage() {
+    import("../modules/mis-reservas/index.js") // <-- El archivo que crearemos
+      .then((module) => {
+        module.initMisReservasPage(); // La función que crearemos
+      })
+      .catch((error) => {
+        console.error("Error inicializando página de Mis Reservas:", error);
+      });
   }
 
   showSafeToast(message, type = "info") {
