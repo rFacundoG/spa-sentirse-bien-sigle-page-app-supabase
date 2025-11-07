@@ -168,21 +168,78 @@ function createProductCard(product) {
   // 11. Listener para el botón de "Agregar al Carrito"
   const addToCartBtn = card.querySelector('.btn-add-to-cart');
   addToCartBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevenir que el click en el botón active el click de la tarjeta
-    console.log("Agregando al carrito (lógica no implementada):", product.id);
+    // 1. Detenemos el click para que no se propague a la tarjeta
+    e.stopPropagation();
 
-    // Feedback visual
-    const btn = e.currentTarget;
-    btn.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar al Carrito';
-      btn.disabled = false;
-    }, 1500);
+    // 2. Llamamos a nuestra nueva función de lógica
+    // Le pasamos el objeto 'product' completo (que tenemos en createProductCard)
+    // y el botón (e.currentTarget) para poder darle feedback visual.
+    addProductToCart(product, e.currentTarget);
   });
 
   col.appendChild(card);
   return col;
+}
+
+/**
+ * Añade un producto al carrito de productos en localStorage.
+ * Maneja la cantidad si el producto ya existe.
+ * @param {object} product - El objeto del producto a añadir (ej. {id: '...', name: '...', price: '...'})
+ * @param {HTMLElement} button - El botón que fue clickeado, para feedback visual.
+ */
+function addProductToCart(product, button) {
+  console.log("Añadiendo producto:", product.name);
+
+  try {
+    // 1. OBTENER EL CARRITO
+    // Buscamos en localStorage si ya existe un "carritoProductos".
+    const carritoJSON = localStorage.getItem("carritoProductos");
+
+    // 2. PREPARAR EL CARRITO
+    // Si 'carritoJSON' no existe (es null), empezamos con un array vacío [].
+    // Si existe, lo convertimos de texto (JSON) a un array de objetos.
+    let carrito = carritoJSON ? JSON.parse(carritoJSON) : [];
+
+    // 3. VERIFICAR SI EL PRODUCTO YA EXISTE
+    // Usamos .findIndex() para buscar en el array si ya hay un item con el mismo ID.
+    const existingProductIndex = carrito.findIndex(item => item.id === product.id);
+
+    if (existingProductIndex > -1) {
+      // 4.A. SI YA EXISTE:
+      // No añadimos un producto nuevo, solo incrementamos la cantidad (quantity).
+      // (Usamos '|| 1' por si el producto viejo no tenía cantidad, le asignamos 1 y luego sumamos 1)
+      carrito[existingProductIndex].quantity = (carrito[existingProductIndex].quantity || 1) + 1;
+      console.log("Cantidad actualizada:", carrito[existingProductIndex].quantity);
+
+    } else {
+      // 4.B. SI ES NUEVO:
+      // Añadimos el producto completo al array, pero con una propiedad nueva: "quantity: 1".
+      // Usamos '...product' para copiar todas las propiedades (id, name, price, etc.).
+      carrito.push({ ...product, quantity: 1 });
+      console.log("Producto nuevo añadido.");
+    }
+
+    // 5. GUARDAR EL CARRITO ACTUALIZADO
+    // Convertimos el array (carrito) de nuevo a texto (JSON).
+    // Lo guardamos de vuelta en localStorage, sobrescribiendo el valor anterior.
+    localStorage.setItem("carritoProductos", JSON.stringify(carrito));
+
+    // 6. DAR FEEDBACK VISUAL AL USUARIO
+    // Cambiamos el botón para que el usuario sepa que funcionó.
+    button.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
+    button.disabled = true;
+
+    // 7. RESETEAR EL BOTÓN
+    // Después de 1.5 segundos, volvemos a poner el botón como estaba.
+    setTimeout(() => {
+      button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar al Carrito';
+      button.disabled = false;
+    }, 1500);
+
+  } catch (error) {
+    console.error("Error al añadir al carrito de productos:", error);
+    alert("No se pudo añadir el producto al carrito.");
+  }
 }
 
 /**
