@@ -28,11 +28,21 @@ export class ProfileUI {
     }
 
     if (badge) {
-      badge.textContent = user.rol === "admin" ? "Administrador" : "Usuario";
+      badge.textContent =
+        user.rol === "admin"
+          ? "Administrador"
+          : user.rol === "professional"
+          ? "Profesional"
+          : "Usuario";
       badge.className = `badge px-3 py-2 fw-bold ${
-        user.rol === "admin" ? "bg-warning" : "bg-secondary"
+        user.rol === "admin"
+          ? "bg-warning"
+          : user.rol === "professional"
+          ? "bg-primary"
+          : "bg-secondary"
       }`;
     }
+
   }
 
   generateInitials(user) {

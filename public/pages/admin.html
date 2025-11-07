@@ -453,6 +453,140 @@
     </div>
   </div>
 
+  <!-- Modal para editar profesional -->
+  <div class="modal fade admin-modal" id="editProfessionalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Profesional</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="edit-professional-form" novalidate>
+          <div class="modal-body">
+            <input type="hidden" id="edit-pro-id" />
+            <input type="hidden" id="edit-pro-user-id" />
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-nombre" class="form-label">Nombre *</label>
+                  <input type="text" class="form-control" id="edit-pro-nombre" name="nombre" required>
+                  <div class="invalid-feedback">El nombre es obligatorio</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-apellido" class="form-label">Apellido</label>
+                  <input type="text" class="form-control" id="edit-pro-apellido" name="apellido">
+                </div>
+              </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-email" class="form-label">Email *</label>
+                  <input type="email" class="form-control" id="edit-pro-email" name="email" required
+                    style="background-color: #e9ecef; cursor: not-allowed;" readonly disabled>
+                  <div class="form-text">El email no se puede modificar</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="edit-pro-telefono" name="telefono">
+                </div>
+              </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-especialidad" class="form-label">Especialidad *</label>
+                  <select class="form-select" id="edit-pro-especialidad" name="especialidad" required>
+                    <option value="">Seleccionar especialidad</option>
+                    <optgroup label="Masajes">
+                      <option value="Masaje Circulatorio">Masaje Circulatorio</option>
+                      <option value="Masaje Descontracturante">Masaje Descontracturante</option>
+                      <option value="Masaje Antiestres">Masaje Antiestrés</option>
+                      <option value="Piedras Calientes">Piedras Calientes</option>
+                    </optgroup>
+                    <optgroup label="Belleza">
+                      <option value="Lifting de Pestañas">Lifting de Pestañas</option>
+                      <option value="Depilacion Facial">Depilación Facial</option>
+                      <option value="Manos y Pies">Manos y Pies</option>
+                    </optgroup>
+                    <optgroup label="Tratamientos Faciales">
+                      <option value="Limpieza + Hidratacion">Limpieza + Hidratación</option>
+                      <option value="Criofrecuencia Facial">Criofrecuencia Facial</option>
+                      <option value="Punta de Diamante">Punta de Diamante</option>
+                    </optgroup>
+                    <optgroup label="Tratamientos Corporales">
+                      <option value="VelaSlim">VelaSlim</option>
+                      <option value="DermoHealth">DermoHealth</option>
+                      <option value="Criofrecuencia Corporal">Criofrecuencia Corporal</option>
+                      <option value="Ultracavitacion">Ultracavitación</option>
+                    </optgroup>
+                  </select>
+                  <div class="invalid-feedback">Selecciona una especialidad</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-experiencia" class="form-label">Años de Experiencia</label>
+                  <input type="number" class="form-control" id="edit-pro-experiencia" name="experiencia" min="0" max="50">
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="edit-pro-bio" class="form-label">Biografía</label>
+              <textarea class="form-control" id="edit-pro-bio" name="bio" rows="3"
+                placeholder="Breve descripción del profesional..."></textarea>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-is-active" class="form-label">Estado del Profesional</label>
+                  <select class="form-select" id="edit-pro-is-active" name="is_active" required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-pro-user-active" class="form-label">Estado de la Cuenta</label>
+                  <select class="form-select" id="edit-pro-user-active" name="user_is_active" required>
+                    <option value="true">Activa</option>
+                    <option value="false">Inactiva</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+  
+            <div class="alert alert-info">
+              <small>
+                <i class="bi bi-info-circle me-2"></i>
+                Los cambios se aplicarán tanto al perfil profesional como a la cuenta de usuario asociada.
+              </small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-admin-primary" id="update-professional">
+              <span class="btn-text">Actualizar Profesional</span>
+              <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal de servicios -->
   <div class="modal fade admin-modal" id="servicioModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">

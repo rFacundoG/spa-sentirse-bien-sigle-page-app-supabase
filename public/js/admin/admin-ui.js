@@ -83,6 +83,17 @@ export class AdminUI {
       });
     }
 
+    // Listener para resetear modal de editar profesional
+    const editProModal = document.getElementById("editProfessionalModal");
+    if (editProModal) {
+      editProModal.addEventListener("show.bs.modal", () => {
+        const form = document.getElementById("edit-professional-form");
+        if (form) {
+          form.classList.remove("was-validated");
+        }
+      });
+    }
+
     // Delegación de eventos para filtros de usuarios
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("filter-users-btn")) {

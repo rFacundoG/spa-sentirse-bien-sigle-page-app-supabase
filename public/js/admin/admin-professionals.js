@@ -26,10 +26,7 @@ export class AdminProfessionals {
   }
 
   renderProfessionalsTable(professionals) {
-    console.log(
-      "[DEBUG] renderProfessionalsTable llamado con:",
-      professionals
-    );
+    console.log("[DEBUG] renderProfessionalsTable llamado con:", professionals);
 
     const tbody = document.getElementById("professionals-table-body");
     console.log("🔍 [DEBUG] tbody encontrado:", tbody);
@@ -53,11 +50,7 @@ export class AdminProfessionals {
       return;
     }
 
-    console.log(
-      "[DEBUG] Renderizando",
-      professionals.length,
-      "profesionales"
-    );
+    console.log("[DEBUG] Renderizando", professionals.length, "profesionales");
 
     tbody.innerHTML = professionals
       .map((pro, index) => {
@@ -282,95 +275,215 @@ export class AdminProfessionals {
     }
   }
 
-  // En setupEventListeners, REMOVER el toggle del checkbox
-  setupEventListeners() {
-    // Solo mantener validación de contraseñas
-    const confirmPasswordField = document.getElementById(
-      "pro-confirm-password"
-    );
-    const passwordField = document.getElementById("pro-password");
-
-    if (confirmPasswordField && passwordField) {
-      confirmPasswordField.addEventListener("input", function () {
-        const password = passwordField.value;
-        if (this.value !== password) {
-          this.classList.add("is-invalid");
-        } else {
-          this.classList.remove("is-invalid");
-        }
-      });
-
-      passwordField.addEventListener("input", function () {
-        const confirmPassword = confirmPasswordField.value;
-        if (confirmPassword && confirmPassword !== this.value) {
-          confirmPasswordField.classList.add("is-invalid");
-        } else {
-          confirmPasswordField.classList.remove("is-invalid");
-        }
-      });
-    }
-
-    // Form submit
-    const form = document.getElementById("add-professional-form");
-    if (form) {
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        this.handleCreateProfessional(e);
-      });
-    }
-  }
-
   async editProfessional(id) {
     try {
+      console.log("Cargando datos del profesional:", id);
+
       const { data: professional, error } = await supabase
         .from("professionals")
         .select(
           `
-                    *,
-                    users (id, nombre, apellido, email, telefono, rol, is_active)
-                `
+          *,
+          users(*)
+        `
         )
         .eq("id", id)
         .single();
 
       if (error) throw error;
+      if (!professional) throw new Error("Profesional no encontrado");
 
-      console.log("Editar profesional:", professional);
-      // Implementar modal de edición para profesionales
+      console.log("Datos del profesional:", professional);
+
+      // Llenar el formulario de edición
+      this.fillEditForm(professional);
+
+      // Mostrar modal
+      const modal = new bootstrap.Modal(
+        document.getElementById("editProfessionalModal")
+      );
+      modal.show();
     } catch (error) {
       console.error("Error cargando profesional:", error);
-      if (typeof showToast === "function") {
-        showToast(`Error al cargar profesional: ${error.message}`, "error");
+      alert(`Error al cargar profesional: ${error.message}`);
+    }
+  }
+
+  fillEditForm(professional) {
+    const user = professional.users || {};
+
+    // Datos básicos
+    document.getElementById("edit-pro-id").value = professional.id;
+    document.getElementById("edit-pro-user-id").value = user.id || "";
+    document.getElementById("edit-pro-nombre").value = user.nombre || "";
+    document.getElementById("edit-pro-apellido").value = user.apellido || "";
+    document.getElementById("edit-pro-email").value = user.email || "";
+    document.getElementById("edit-pro-telefono").value = user.telefono || "";
+
+    // Datos profesionales
+    document.getElementById("edit-pro-especialidad").value =
+      professional.specialty || "";
+    document.getElementById("edit-pro-experiencia").value =
+      professional.experience_years || 0;
+    document.getElementById("edit-pro-bio").value = professional.bio || "";
+
+    // Estados
+    document.getElementById("edit-pro-is-active").value = professional.is_active
+      ? "true"
+      : "false";
+    document.getElementById("edit-pro-user-active").value = user.is_active
+      ? "true"
+      : "false";
+
+    // Resetear validación
+    const form = document.getElementById("edit-professional-form");
+    form.classList.remove("was-validated");
+  }
+
+  async handleUpdateProfessional(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
+
+    const professionalId = document.getElementById("edit-pro-id").value;
+    const userId = document.getElementById("edit-pro-user-id").value;
+
+    const professionalData = {
+      specialty: document.getElementById("edit-pro-especialidad").value,
+      experience_years:
+        parseInt(document.getElementById("edit-pro-experiencia").value) || 0,
+      bio: document.getElementById("edit-pro-bio").value,
+      is_active: document.getElementById("edit-pro-is-active").value === "true",
+    };
+
+    const userData = {
+      nombre: document.getElementById("edit-pro-nombre").value,
+      apellido: document.getElementById("edit-pro-apellido").value,
+      telefono: document.getElementById("edit-pro-telefono").value,
+      is_active:
+        document.getElementById("edit-pro-user-active").value === "true",
+      updated_at: new Date().toISOString(),
+    };
+
+    const submitBtn = document.getElementById("update-professional");
+    const btnText = submitBtn.querySelector(".btn-text");
+    const btnLoader = submitBtn.querySelector(".btn-loader");
+
+    try {
+      // Bloquear botón y mostrar loader
+      submitBtn.disabled = true;
+      btnText.textContent = "Actualizando...";
+      btnLoader.classList.remove("d-none");
+
+      console.log("🔄 Actualizando profesional:", professionalId);
+      console.log("📊 Datos profesional:", professionalData);
+      console.log("👤 Datos usuario:", userData);
+
+      // Actualizar profesional
+      const { error: proError } = await supabase
+        .from("professionals")
+        .update(professionalData)
+        .eq("id", professionalId);
+
+      if (proError) throw proError;
+
+      // Actualizar usuario si existe
+      if (userId) {
+        const { error: userError } = await supabase
+          .from("users")
+          .update(userData)
+          .eq("id", userId);
+
+        if (userError) throw userError;
       }
+
+      // Éxito
+      console.log("✅ Profesional actualizado exitosamente");
+      alert("✅ Profesional actualizado exitosamente");
+
+      // Cerrar modal y recargar lista
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("editProfessionalModal")
+      );
+      modal.hide();
+
+      // Recargar la lista de profesionales
+      await this.loadProfessionals();
+    } catch (error) {
+      console.error("❌ Error actualizando profesional:", error);
+      alert(`❌ Error: ${error.message}`);
+    } finally {
+      // Restaurar botón
+      submitBtn.disabled = false;
+      btnText.textContent = "Actualizar Profesional";
+      btnLoader.classList.add("d-none");
     }
   }
 
   async deleteProfessional(id, name) {
     if (
       !confirm(
-        `¿Estás seguro de eliminar al profesional "${name}"?\n\nEsta acción eliminará al profesional pero NO la cuenta de usuario asociada.`
+        `¿Estás seguro de eliminar al profesional "${name}"?\n\nEsta acción eliminará completamente al profesional y su cuenta de usuario asociada (si existe). Esta acción no se puede deshacer.`
       )
     ) {
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from("professionals")
-        .delete()
-        .eq("id", id);
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) throw new Error("No hay sesión activa");
 
-      if (error) throw error;
+      // Llamar Edge Function para eliminar profesional
+      const response = await fetch(
+        "https://mvbpdtdvbgdknvirbsvs.supabase.co/functions/v1/admin-delete-professional",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            professionalId: id,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Error al eliminar profesional");
+      }
+
+      console.log("Profesional eliminado:", result);
 
       if (typeof showToast === "function") {
-        showToast("✅ Profesional eliminado exitosamente", "success");
+        showToast("Profesional eliminado exitosamente", "success");
+      } else {
+        alert("Profesional eliminado exitosamente");
       }
 
       await this.loadProfessionals();
     } catch (error) {
       console.error("Error eliminando profesional:", error);
+
+      let errorMessage = `Error: ${error.message}`;
+      if (error.message.includes("Professional not found")) {
+        errorMessage = "Profesional no encontrado";
+      } else if (error.message.includes("Admin access required")) {
+        errorMessage = "No tienes permisos de administrador para esta acción";
+      }
+
       if (typeof showToast === "function") {
-        showToast(`❌ Error: ${error.message}`, "error");
+        showToast(`❌ ${errorMessage}`, "error");
+      } else {
+        alert(`❌ ${errorMessage}`);
       }
     }
   }
@@ -430,12 +543,21 @@ export class AdminProfessionals {
       });
     }
 
-    // Form submit
+    // Form submit - Crear profesional
     const form = document.getElementById("add-professional-form");
     if (form) {
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         this.handleCreateProfessional(e);
+      });
+    }
+
+    // Form submit - Editar profesional (¡ESTE ES EL QUE FALTABA!)
+    const editForm = document.getElementById("edit-professional-form");
+    if (editForm) {
+      editForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleUpdateProfessional(e);
       });
     }
 
@@ -446,7 +568,6 @@ export class AdminProfessionals {
         e.preventDefault();
         const form = document.getElementById("add-professional-form");
         if (form) {
-          // Simular submit del formulario
           const submitEvent = new Event("submit", {
             bubbles: true,
             cancelable: true,
