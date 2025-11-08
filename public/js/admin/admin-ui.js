@@ -56,6 +56,16 @@ export class AdminUI {
       }, 100);
     }
 
+    // Setup event listeners para proveedores
+    if (
+      this.adminManager.suppliers &&
+      typeof this.adminManager.suppliers.setupEventListeners === "function"
+    ) {
+      setTimeout(() => {
+        this.adminManager.suppliers.setupEventListeners();
+      }, 100);
+    }
+
     // Listener para abrir modal de agregar profesional
     const addProModal = document.getElementById("addProfessionalModal");
     if (addProModal) {
