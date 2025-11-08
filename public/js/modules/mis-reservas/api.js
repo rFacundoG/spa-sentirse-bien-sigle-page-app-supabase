@@ -6,26 +6,27 @@ import { supabase } from "../../core/supabase.js";
  * Busca todas las reservas (y sus items) para el usuario actual.
  */
 export async function fetchUserBookings(userId) {
-  // Esta es la consulta completa y correcta
+  
+  console.log("[DEBUG API] Ejecutando consulta fetchUserBookings...");
+  
   const { data: bookings, error } = await supabase
-    .from("bookings")
-    .select(
-      `
+    .from('bookings')
+    .select(`
       *,
       booking_items (
         price_at_purchase,
         services ( title ) 
       )
-    `
-    )
-    .eq("user_id", userId)
-    .order("appointment_datetime", { ascending: true }); // Ordenar por fecha del turno
+    `)
+    .eq('user_id', userId)
+    .order('appointment_datetime', { ascending: true });
 
   if (error) {
-    console.error("Error cargando las reservas:", error);
-    throw error; // Propagamos el error
+    console.error("[DEBUG API] ¡ERROR DE SUPABASE!", error);
+    throw error;
   }
-
+  
+  console.log("[DEBUG API] Datos devueltos:", bookings);
   return bookings || [];
 }
 

@@ -11,74 +11,113 @@ import {
 
 let cartItems = [];
 let reservationContext;
-let selectedDateTime = null; // <-- NUEVO: Variable para la fecha
+let selectedDateTime = null;
 
 /**
- * FUNCIÓN PRINCIPAL
+ * FUNCIÓN PRINCIPAL (Llamada por el Router)
  */
 export function initCheckoutPage() {
   const carritoJSON = localStorage.getItem("carritoServicios");
   cartItems = carritoJSON ? JSON.parse(carritoJSON) : [];
 
+  // 1. Crear el Contexto (se crea una sola vez)
+  reservationContext = new ReservationContext(0); // Inicia en 0
+
+  initCalendar();
+  setupListeners(); // Configurar TODOS los listeners
+
+  // 2. Renderizar y validar el estado inicial
+  refreshCheckoutState();
+}
+
+/**
+ * NUEVA: Función central que lee el estado y actualiza toda la UI.
+ */
+function refreshCheckoutState() {
+  // 1. Renderizar carrito y obtener nuevo subtotal
   const subtotal = ui.renderCartItems(cartItems);
-  reservationContext = new ReservationContext(subtotal);
+
+  // 2. Actualizar el subtotal en el contexto
+  reservationContext.subtotal = subtotal;
+
+  // 3. Recalcular y mostrar totales
   updateTotals();
 
-  initCalendar(); // <-- NUEVO: Inicializar el calendario
-  setupListeners();
-
-  // <-- MODIFICADO: Pasamos la fecha (null) a la validación inicial
+  // 4. Re-validar las reglas (habilita/deshabilita confirmar)
   const { delivery_method, payment_method } = ui.getFormValues();
   ui.validateBusinessRules(payment_method, delivery_method, selectedDateTime);
 }
 
 /**
- * NUEVO: Inicializa Flatpickr con la regla de 48hs
+ * (Sin cambios) Inicializa Flatpickr
  */
 function initCalendar() {
-  // Regla de 48 horas: new Date().fp_incr(2) significa "Hoy + 2 días"
   const minDate = new Date().fp_incr(2);
-
   flatpickr("#datepicker-checkout", {
     enableTime: true,
-    dateFormat: "Y-m-d H:i", // Formato (Año-Mes-Día Hora:Minuto)
+    dateFormat: "Y-m-d H:i",
     minDate: minDate,
     time_24hr: true,
-    minuteIncrement: 30, // Turnos cada 30 min
-    // Se dispara cuando el usuario SELECCIONA una fecha
+    minuteIncrement: 30,
     onChange: function (selectedDates) {
-      selectedDateTime = selectedDates[0]; // Guarda la fecha
-      // Re-valida las reglas cada vez que cambia la fecha
+      selectedDateTime = selectedDates[0];
       handleFormChange();
     },
   });
 }
 
 /**
- * Configura los listeners
+ * MODIFICADO: Configura todos los listeners de la página.
  */
 function setupListeners() {
-  const radioInputs = document.querySelectorAll(
-    '#payment-options-wrapper input[name="payment"]'
-  );
-  radioInputs.forEach((input) => {
-    input.addEventListener("change", handleFormChange);
-  });
+  // Listener para radios de pago
+  document
+    .querySelectorAll('#payment-options-wrapper input[name="payment"]')
+    .forEach((input) => input.addEventListener("change", handleFormChange));
 
-  const confirmButton = document.getElementById("btn-confirmar-checkout");
-  confirmButton.addEventListener("click", handleConfirmBooking);
+  // Listener del botón principal de confirmar
+  document
+    .getElementById("btn-confirmar-checkout")
+    .addEventListener("click", handleConfirmBooking);
+
+  // ===============================================
+  // ¡NUEVO LISTENER PARA ELIMINAR ITEMS!
+  // ===============================================
+  const itemsContainer = document.getElementById("servicios-items-container");
+  if (itemsContainer) {
+    itemsContainer.addEventListener("click", handleRemoveItemClick);
+  }
 }
 
 /**
- * MODIFICADO: Se dispara al cambiar el método de pago O la fecha.
+ * NUEVA: Se dispara al hacer clic en el contenedor de items.
+ */
+function handleRemoveItemClick(event) {
+  const deleteButton = event.target.closest(".btn-remove-item");
+  if (!deleteButton) return; // No se hizo clic en un botón de borrar
+
+  const itemId = deleteButton.getAttribute("data-item-id");
+
+  // 1. Filtrar el array local (convertir a string para comparación segura)
+  cartItems = cartItems.filter(
+    (item) => item.id.toString() !== itemId.toString()
+  );
+
+  // 2. Actualizar localStorage
+  localStorage.setItem("carritoServicios", JSON.stringify(cartItems));
+
+  // 3. Refrescar toda la UI de la página
+  refreshCheckoutState();
+  showSafeToast("Servicio eliminado del carrito", "info");
+}
+
+/**
+ * (Sin cambios) Se dispara al cambiar el método de pago O la fecha.
  */
 function handleFormChange() {
   const { delivery_method, payment_method } = ui.getFormValues();
+  ui.validateBusinessRules(payment_method, delivery_method, selectedDateTime);
 
-  // AHORA PASAMOS LA FECHA A LA VALIDACIÓN
-  ui.validateBusinessRules(payment_method);
-
-  // (El resto de la lógica de Strategy sigue igual...)
   if (payment_method === "debit_card") {
     reservationContext.setStrategy(new DebitCardStrategy());
   } else if (payment_method === "cash") {
@@ -105,48 +144,41 @@ function updateTotals() {
 }
 
 /**
- * MODIFICADO: Maneja el clic final en "Confirmar Reserva".
+ * (Sin cambios) Maneja el clic final en "Confirmar Reserva".
  */
 async function handleConfirmBooking() {
   const { delivery_method, payment_method } = ui.getFormValues();
 
-  // 1. Validar por última vez (esto no cambia)
+  if (cartItems.length === 0) {
+    showSafeToast("Tu carrito está vacío.", "warning");
+    return;
+  }
   if (
     !ui.validateBusinessRules(payment_method, delivery_method, selectedDateTime)
   ) {
     showSafeToast("Por favor, completa todos los campos requeridos.", "danger");
     return;
   }
-
   if (!window.currentUser) {
     showSafeToast("Debes iniciar sesión para reservar.", "warning");
     return;
   }
 
-  if (cartItems.length === 0) {
-    showSafeToast(
-      "Tu carrito está vacío. Añade un servicio para reservar.",
-      "warning"
-    );
-    return;
-  }
+  const { discountAmount, newTotal } = reservationContext.calculateTotal();
 
-  // 2. Preparar el objeto para la API (¡ESTE ES EL CAMBIO CLAVE!)
-  // Usamos el 'subtotal' del contexto, ignorando el descuento calculado.
   const bookingData = {
     user_id: window.currentUser.id,
-    subtotal: reservationContext.subtotal, // <-- ENVIAMOS EL PRECIO COMPLETO
+    subtotal: reservationContext.subtotal,
     payment_method: payment_method,
     delivery_method: delivery_method,
     appointment_datetime: selectedDateTime.toISOString(),
   };
 
+  const confirmBtn = document.getElementById("btn-confirmar-checkout");
   try {
-    const confirmBtn = document.getElementById("btn-confirmar-checkout");
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = "Procesando...";
 
-    // 4. Llamar a la API
     const result = await api.saveBooking(bookingData, cartItems);
 
     if (result.success) {
@@ -155,7 +187,6 @@ async function handleConfirmBooking() {
         "success"
       );
       localStorage.removeItem("carritoServicios");
-      // REDIRIGE A "MIS RESERVAS"
       window.location.hash = "#reservas";
     } else {
       throw new Error("La API de guardado no tuvo éxito.");
@@ -163,8 +194,6 @@ async function handleConfirmBooking() {
   } catch (error) {
     console.error("Error al confirmar la reserva:", error);
     showSafeToast("Error al procesar tu reserva. Intenta de nuevo.", "danger");
-
-    const confirmBtn = document.getElementById("btn-confirmar-checkout");
     confirmBtn.disabled = false;
     confirmBtn.innerHTML = "Confirmar Reserva";
   }
