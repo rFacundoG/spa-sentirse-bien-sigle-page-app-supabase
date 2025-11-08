@@ -7,8 +7,6 @@ export class AdminUsers {
 
   async loadUsers() {
     try {
-      console.log("🔄 Cargando usuarios...");
-
       const { data: users, error } = await supabase
         .from("users")
         .select("*")
@@ -18,7 +16,7 @@ export class AdminUsers {
       if (error) throw error;
       this.renderUsersTable(users || []);
     } catch (error) {
-      console.error("💥 Error loading users:", error);
+      console.error("Error loading users:", error);
       this.renderUsersTable([]);
     }
   }
@@ -81,7 +79,6 @@ export class AdminUsers {
   }
 
   filterUsers(filterType) {
-    console.log(`🎯 Aplicando filtro: ${filterType}`);
 
     const tbody = document.getElementById("users-table-body");
     if (!tbody) return;
@@ -277,9 +274,8 @@ export class AdminUsers {
       if (error) throw error;
 
       // Éxito
-      console.log("✅ Usuario actualizado exitosamente");
       if (typeof showToast === "function") {
-        showToast("✅ Usuario actualizado exitosamente", "success");
+        showToast("Usuario actualizado exitosamente", "success");
       }
 
       // Cerrar modal y recargar lista
@@ -291,11 +287,11 @@ export class AdminUsers {
       // Recargar la lista de usuarios
       await this.loadUsers();
     } catch (error) {
-      console.error("❌ Error actualizando usuario:", error);
+      console.error("Error actualizando usuario:", error);
       if (typeof showToast === "function") {
-        showToast(`❌ Error: ${error.message}`, "error");
+        showToast(`Error: ${error.message}`, "error");
       } else {
-        alert(`❌ Error: ${error.message}`);
+        alert(`Error: ${error.message}`);
       }
     } finally {
       // Siempre restaurar el botón
@@ -339,8 +335,6 @@ export class AdminUsers {
         showToast("Eliminando usuario...", "info");
       }
 
-      console.log("🔄 Iniciando eliminación del usuario:", id);
-
       // Llamar al Edge Function para eliminar usuario
       const response = await fetch(
         "https://mvbpdtdvbgdknvirbsvs.supabase.co/functions/v1/admin-delete-user",
@@ -361,23 +355,20 @@ export class AdminUsers {
       }
 
       // Éxito - mostrar toast de éxito
-      console.log("✅ Usuario eliminado exitosamente");
       if (typeof showToast === "function") {
-        showToast("✅ Usuario eliminado exitosamente", "success");
+        showToast("Usuario eliminado exitosamente", "success");
       } else {
-        alert("✅ Usuario eliminado exitosamente");
+        alert("Usuario eliminado exitosamente");
       }
 
       // Recargar la lista de usuarios
       await this.loadUsers();
     } catch (error) {
-      console.error("❌ Error eliminando usuario:", error);
-
       // Mostrar toast de error
       if (typeof showToast === "function") {
-        showToast(`❌ Error: ${error.message}`, "error");
+        showToast(`Error: ${error.message}`, "error");
       } else {
-        alert(`❌ Error: ${error.message}`);
+        alert(`Error: ${error.message}`);
       }
     }
   }

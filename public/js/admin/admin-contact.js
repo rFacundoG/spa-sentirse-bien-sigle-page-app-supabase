@@ -8,8 +8,6 @@ export class AdminContact {
 
   async loadContactMessages() {
     try {
-      console.log("Cargando mensajes de contacto...");
-
       const { data: messages, error } = await supabase
         .from("contact_messages")
         .select("*")
@@ -18,7 +16,7 @@ export class AdminContact {
       if (error) throw error;
       this.renderContactTable(messages || []);
     } catch (error) {
-      console.error("💥 Error loading contact messages:", error);
+      console.error("Error loading contact messages:", error);
       this.renderContactTable([]);
     }
   }

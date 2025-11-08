@@ -50,11 +50,12 @@ body {
     color: var(--color-text);
 }
 
-/* ---- --- Estilos de Iconos del Footer -- ---- */
-.hover-scale {
-    transition: color 0.4s ease;
+/* ---- Estilos de Iconos del Footer ---- */
+.footer-icon {
+    color: var(--bs-light);
+    transition: color 0.3s ease;
 }
 
-.hover-scale:hover {
-    color: var(--color-btn) !important;
+.footer-icon:hover {
+    color: var(--color-btn);
 }

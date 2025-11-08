@@ -26,10 +26,8 @@ export class AdminProfessionals {
   }
 
   renderProfessionalsTable(professionals) {
-    console.log("[DEBUG] renderProfessionalsTable llamado con:", professionals);
 
     const tbody = document.getElementById("professionals-table-body");
-    console.log("🔍 [DEBUG] tbody encontrado:", tbody);
 
     if (!tbody) {
       console.error(
@@ -39,7 +37,6 @@ export class AdminProfessionals {
     }
 
     if (professionals.length === 0) {
-      console.log("[DEBUG] No hay profesionales, mostrando mensaje vacío");
       tbody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center py-4 text-muted">
@@ -50,17 +47,10 @@ export class AdminProfessionals {
       return;
     }
 
-    console.log("[DEBUG] Renderizando", professionals.length, "profesionales");
-
     tbody.innerHTML = professionals
       .map((pro, index) => {
-        console.log(`👤 [DEBUG] Procesando profesional ${index + 1}:`, pro);
 
         const user = pro.users || {};
-        console.log(
-          `[DEBUG] Datos de usuario para profesional ${index + 1}:`,
-          user
-        );
 
         let nombreCompleto = "N/A";
         if (user.nombre && user.apellido) {
@@ -77,14 +67,6 @@ export class AdminProfessionals {
         const telefono = user.telefono || pro.phone || "N/A";
         const estadoUsuario = user.is_active ? "Activo" : "Inactivo";
         const tieneCuenta = !!user.id;
-
-        console.log(`[DEBUG] Datos procesados para ${index + 1}:`, {
-          nombreCompleto,
-          email,
-          telefono,
-          tieneCuenta,
-          estadoUsuario,
-        });
 
         return `
                 <tr>
@@ -159,7 +141,6 @@ export class AdminProfessionals {
       })
       .join("");
 
-    console.log("[DEBUG] Tabla renderizada correctamente");
   }
 
   viewProfessional(id) {
@@ -214,9 +195,6 @@ export class AdminProfessionals {
       submitBtn.disabled = true;
       btnText.textContent = "Guardando...";
       btnLoader.classList.remove("d-none");
-
-      // USAR console.log en lugar de showToast para el mensaje de carga
-      console.log("Creando profesional...");
 
       const {
         data: { session },
@@ -277,8 +255,6 @@ export class AdminProfessionals {
 
   async editProfessional(id) {
     try {
-      console.log("Cargando datos del profesional:", id);
-
       const { data: professional, error } = await supabase
         .from("professionals")
         .select(
@@ -292,8 +268,6 @@ export class AdminProfessionals {
 
       if (error) throw error;
       if (!professional) throw new Error("Profesional no encontrado");
-
-      console.log("Datos del profesional:", professional);
 
       // Llenar el formulario de edición
       this.fillEditForm(professional);
@@ -379,10 +353,6 @@ export class AdminProfessionals {
       btnText.textContent = "Actualizando...";
       btnLoader.classList.remove("d-none");
 
-      console.log("🔄 Actualizando profesional:", professionalId);
-      console.log("📊 Datos profesional:", professionalData);
-      console.log("👤 Datos usuario:", userData);
-
       // Actualizar profesional
       const { error: proError } = await supabase
         .from("professionals")
@@ -402,8 +372,7 @@ export class AdminProfessionals {
       }
 
       // Éxito
-      console.log("✅ Profesional actualizado exitosamente");
-      alert("✅ Profesional actualizado exitosamente");
+      alert("rofesional actualizado exitosamente");
 
       // Cerrar modal y recargar lista
       const modal = bootstrap.Modal.getInstance(
@@ -414,8 +383,8 @@ export class AdminProfessionals {
       // Recargar la lista de profesionales
       await this.loadProfessionals();
     } catch (error) {
-      console.error("❌ Error actualizando profesional:", error);
-      alert(`❌ Error: ${error.message}`);
+      console.error("Error actualizando profesional:", error);
+      alert(`Error: ${error.message}`);
     } finally {
       // Restaurar botón
       submitBtn.disabled = false;
@@ -460,8 +429,6 @@ export class AdminProfessionals {
       if (!response.ok) {
         throw new Error(result.error || "Error al eliminar profesional");
       }
-
-      console.log("Profesional eliminado:", result);
 
       if (typeof showToast === "function") {
         showToast("Profesional eliminado exitosamente", "success");
