@@ -37,6 +37,12 @@
           <i class="bi bi-chat-dots me-2"></i>Consultas
         </button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="proveedores-tab" data-bs-toggle="tab" data-bs-target="#proveedores" type="button"
+          role="tab">
+          <i class="bi bi-truck me-2"></i>Proveedores
+        </button>
+      </li>
     </ul>
 
     <!-- Contenido de las pestañas -->
@@ -224,6 +230,43 @@
             <tbody id="contact-table-body">
               <tr>
                 <td colspan="8" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pestaña de Proveedores -->
+      <div class="tab-pane fade" id="proveedores" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-4 filter-controls">
+          <h5 class="mb-0 text-title">
+            <i class="bi bi-truck me-2"></i>Gestión de Proveedores
+          </h5>
+          <button class="btn btn-admin-primary" id="btn-abrir-crear-proveedor">
+            <i class="bi bi-plus-circle me-2"></i>Agregar Proveedor
+          </button>
+        </div>
+      
+        <div class="admin-table">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Proveedor</th>
+                <th>Contacto</th>
+                <th>Dirección</th>
+                <th>Productos</th>
+                <th>Estado</th>
+                <th>Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-table-body">
+              <tr>
+                <td colspan="7" class="text-center py-5">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                   </div>
@@ -738,6 +781,179 @@
             </button>
             <button type="submit" class="btn btn-primary" id="btn-save-servicio">
               Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear Proveedor -->
+  <div class="modal fade admin-modal" id="createSupplierModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear Nuevo Proveedor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="create-supplier-form" novalidate>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-name" class="form-label">Nombre del Proveedor *</label>
+                  <input type="text" class="form-control" id="supplier-name" name="name" required>
+                  <div class="invalid-feedback">El nombre del proveedor es obligatorio</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-contact" class="form-label">Persona de Contacto</label>
+                  <input type="text" class="form-control" id="supplier-contact" name="contact_name">
+                </div>
+              </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="supplier-email" name="email">
+                  <div class="invalid-feedback">Por favor ingresa un email válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-phone" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="supplier-phone" name="phone">
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="supplier-address" class="form-label">Dirección</label>
+              <textarea class="form-control" id="supplier-address" name="address" rows="2"></textarea>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-website" class="form-label">Sitio Web</label>
+                  <input type="url" class="form-control" id="supplier-website" name="website" placeholder="https://...">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="supplier-active" class="form-label">Estado</label>
+                  <select class="form-select" id="supplier-active" name="is_active" required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="supplier-notes" class="form-label">Notas Adicionales</label>
+              <textarea class="form-control" id="supplier-notes" name="notes" rows="3"
+                placeholder="Información adicional sobre el proveedor..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-admin-primary" id="btn-crear-proveedor">
+              <span class="btn-text">Crear Proveedor</span>
+              <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Proveedor -->
+  <div class="modal fade admin-modal" id="editSupplierModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Proveedor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="edit-supplier-form" novalidate>
+          <div class="modal-body">
+            <input type="hidden" id="edit-supplier-id">
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-name" class="form-label">Nombre del Proveedor *</label>
+                  <input type="text" class="form-control" id="edit-supplier-name" name="name" required>
+                  <div class="invalid-feedback">El nombre del proveedor es obligatorio</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-contact" class="form-label">Persona de Contacto</label>
+                  <input type="text" class="form-control" id="edit-supplier-contact" name="contact_name">
+                </div>
+              </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="edit-supplier-email" name="email">
+                  <div class="invalid-feedback">Por favor ingresa un email válido</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-phone" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="edit-supplier-phone" name="phone">
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="edit-supplier-address" class="form-label">Dirección</label>
+              <textarea class="form-control" id="edit-supplier-address" name="address" rows="2"></textarea>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-website" class="form-label">Sitio Web</label>
+                  <input type="url" class="form-control" id="edit-supplier-website" name="website"
+                    placeholder="https://...">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit-supplier-active" class="form-label">Estado</label>
+                  <select class="form-select" id="edit-supplier-active" name="is_active" required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="edit-supplier-notes" class="form-label">Notas Adicionales</label>
+              <textarea class="form-control" id="edit-supplier-notes" name="notes" rows="3"
+                placeholder="Información adicional sobre el proveedor..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-admin-primary" id="btn-actualizar-proveedor">
+              <span class="btn-text">Actualizar Proveedor</span>
+              <div class="btn-loader spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
             </button>
           </div>
         </form>

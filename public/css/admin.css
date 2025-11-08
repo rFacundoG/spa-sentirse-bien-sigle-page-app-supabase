@@ -325,3 +325,104 @@
         transform: translateY(0);
     }
 }
+
+/* Estilos SOLO para el modal de productos de proveedores */
+/* admin.css - Agregar al final */
+
+/* Estilos específicos para el modal de productos de proveedores */
+.supplier-products-modal .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(79, 70, 59, 0.2);
+}
+
+.supplier-products-modal .modal-header {
+    background: linear-gradient(135deg, var(--color-title) 0%, var(--color-btn) 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+.supplier-products-modal .modal-title {
+    font-weight: 700;
+}
+
+.supplier-products-modal .modal-body {
+    padding: 2rem;
+    background-color: var(--color-main-background);
+}
+
+.supplier-products-modal .product-item {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    padding: 0.75rem;
+    background: white;
+}
+
+.supplier-products-modal .product-item:hover {
+    background-color: #f8f9fa;
+    border-color: var(--color-btn);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.supplier-products-modal .product-item.bg-selected {
+    background-color: rgba(25, 135, 84, 0.15) !important;
+    border-color: #198754 !important;
+    border-width: 2px;
+}
+
+.supplier-products-modal .product-checkbox {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+}
+
+.supplier-products-modal #selected-products-list .d-flex {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.supplier-products-modal #selected-products-list .btn-outline-danger {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Botones del modal */
+.supplier-products-modal .btn-admin-primary {
+    background: linear-gradient(135deg, var(--color-btn) 0%, var(--color-btn-hover) 100%);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(140, 110, 95, 0.3);
+}
+
+.supplier-products-modal .btn-admin-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(140, 110, 95, 0.4);
+    color: white;
+}
+
+.supplier-products-modal .btn-admin-outline {
+    border: 2px solid var(--color-btn);
+    color: var(--color-btn);
+    background: transparent;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.supplier-products-modal .btn-admin-outline:hover {
+    background: var(--color-btn);
+    color: white;
+    transform: translateY(-1px);
+}
