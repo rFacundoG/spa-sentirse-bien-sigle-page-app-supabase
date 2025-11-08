@@ -32,6 +32,11 @@
           <i class="bi bi-journal-album me-2"></i>Servicios
         </button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="consultas-tab" data-bs-toggle="tab" data-bs-target="#consultas" type="button" role="tab">
+          <i class="bi bi-chat-dots me-2"></i>Consultas
+        </button>
+      </li>
     </ul>
 
     <!-- Contenido de las pestañas -->
@@ -162,6 +167,63 @@
             <tbody id="services-table-body">
               <tr>
                 <td colspan="6" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pestaña de Consultas -->
+      <div class="tab-pane fade" id="consultas" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-4 filter-controls">
+          <h5 class="mb-0 text-title">
+            <i class="bi bi-envelope me-2"></i>Gestión de Consultas
+          </h5>
+          <div class="btn-group contact-filter">
+            <button class="btn btn-admin-outline dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Todos
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button class="dropdown-item filter-contact-btn" type="button" data-filter="all">
+                  Todos
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item filter-contact-btn" type="button" data-filter="new">
+                  Nuevos
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item filter-contact-btn" type="button" data-filter="read">
+                  Leídos
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      
+        <div class="admin-table">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Contacto</th>
+                <th>Tipo</th>
+                <th>Servicio</th>
+                <th>Mensaje</th>
+                <th>Newsletter</th>
+                <th>Estado</th>
+                <th>Recibido</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="contact-table-body">
+              <tr>
+                <td colspan="8" class="text-center py-5">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                   </div>

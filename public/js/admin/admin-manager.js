@@ -3,6 +3,7 @@ import { AdminStats } from "./admin-stats.js";
 import { AdminUsers } from "./admin-users.js";
 import { AdminProfessionals } from "./admin-professionals.js";
 import { AdminServices } from "./admin-services.js";
+import { AdminContact } from "./admin-contact.js";
 import { AdminUI } from "./admin-ui.js";
 
 export class AdminManager {
@@ -13,6 +14,7 @@ export class AdminManager {
     this.users = new AdminUsers(this);
     this.professionals = new AdminProfessionals(this);
     this.services = new AdminServices(this);
+    this.contact = new AdminContact(this);
     this.ui = new AdminUI(this);
     this.init();
   }
@@ -30,6 +32,7 @@ export class AdminManager {
       await this.professionals.loadProfessionals();
       await this.users.loadUsers();
       await this.services.loadServices();
+      await this.contact.loadContactMessages();
       this.ui.setupAdminListeners();
     } catch (error) {
       console.error("Error loading admin data:", error);

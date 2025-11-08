@@ -130,5 +130,15 @@ export class AdminUI {
         this.adminManager.services.handleCreateService()
       );
     }
+
+    // Setup event listeners para contactos
+    if (
+      this.adminManager.contact &&
+      typeof this.adminManager.contact.setupEventListeners === "function"
+    ) {
+      setTimeout(() => {
+        this.adminManager.contact.setupEventListeners();
+      }, 100);
+    }
   }
 }
